@@ -1,0 +1,22 @@
+import mongoose from "mongoose";
+const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
+const identityList = ['ktp', 'sim']
+const vendor = new mongoose.Schema({
+    // photo:{type:String, required: true},
+    userId: { type: String, required: true, unique: true },
+    identity: {
+        typeIdentity: { type: String, enum: identityList },
+        numberIdentity: { type: Number, required: true }
+    },
+    categoryVendor: { type: String, enum: categoryList },
+    address: { type: String, required: true },
+    phone1: { type: String, required: true },
+    phone2: { type: String, required: true },
+    bankAccount: [
+        { bankName: { type: String, required: true }, accountNumber: { type: String, required: true } }
+    ],
+    status: { type: Boolean, default: false },
+    balance: { type: Number, default: 0 }
+})
+
+module.exports = mongoose.model('vendor', vendor)

@@ -49,7 +49,7 @@ export const login = async (req: any, res: any) => {
             return res.status(400).send({ data: compare, message: 'Password salah' })
         }
         // Create Token
-        const token = jwt.sign({ _id: response._id, name: response.name, email: response.email }, privateKey, { expiresIn: 60 })
+        const token = jwt.sign({ _id: response._id, name: response.name, email: response.email }, privateKey, { expiresIn: '1d' })
 
         // // Create Refresh token
         const refreshToken = jwt.sign({ _id: response._id, name: response.name, email: response.email }, process.env.REFRESH_TOKEN, { expiresIn: '1d' })
