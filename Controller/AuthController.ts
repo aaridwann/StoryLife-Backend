@@ -2,22 +2,27 @@ const bcrypt = require('bcrypt');
 const userDb = require('../Models/UsersModels')
 const jwt = require('jsonwebtoken')
 const privateKey = process.env.PRIVATE_KEY
-
+interface User {
+    name:string,
+    email:string, 
+    password:string
+}
 
 
 export const register = async (req: any, res: any) => {
-    if (!req.body.name || !req.body.password || req.body.password.toString().length < 3) {
+    const{name,email,password}:User = req.body
+    if (!name || !password || password.toString().length < 3||!email) {
         return res.json({ message: 'data kosong' })
     }
-    let { password } = req.body
+    // let { password } = req.body
     let salt = 15
     let hashPassword = await bcrypt.hash(password, salt)
 
     try {
         const response = await new userDb({
-            name: req.body.name,
+            name: name.toLowerCase(),
             password: hashPassword,
-            email: req.body.email,
+            email: email.trim(),
         }).save((err: string) => {
             if (err) {
                 return res.status(400).json({ data: err, message: 'email sudah terdaftar' })
@@ -33,7 +38,7 @@ export const register = async (req: any, res: any) => {
 }
 
 export const login = async (req: any, res: any) => {
-    let { email, password } = req.body
+    let { email, password }:User = req.body
     if (!email || !password) {
         return res.status(400).send({ message: 'Data harap diisi' })
     }

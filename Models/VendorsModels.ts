@@ -4,12 +4,12 @@ const identityList = ['ktp', 'sim']
 const vendor = new mongoose.Schema({
     // photo:{type:String, required: true},
     userId: { type: String, required: true, unique: true },
-    nameVendor: { type: String, required: true, unique: true },
+    name: { type: String, required: true, unique: true },
     identity: {
         typeIdentity: { type: String, enum: identityList },
         numberIdentity: { type: Number, required: true }
     },
-    categoryVendor: { type: String, enum: categoryList },
+    category: { type: String, enum: categoryList },
     address: { street: { type: String, required: true }, city: { type: String, required: true }, province: { type: String, required: true }, state: { type: String, required: true } },
     phone1: { type: String, required: true },
     phone2: { type: String, required: true },

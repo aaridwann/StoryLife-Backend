@@ -16,16 +16,16 @@ const booking = new mongoose.Schema({
     idVendor: { type: String, required: true },
     vendorName: { type: String, required: true },
     vendorAddress: { type: String, required: true },
-    vendorPhone: { type: String, required: true },
+    vendorPhone: { type: Array, required: true },
     vendorCategory: { type: String, enum: categoryVendor },
     package: [{
         name: { type: String, required: true },
         details: { type: String, required: true },
         price: { type: Number, required: true },
         discount: { type: Number, default: 0 },
-        quantity: { type: Number, required: true, min: 1, },
-        total: { type: Number, default: this.price * this.quantity }
-    }],
+        quantity: { type: Number, required: true, min: 1 },
+        total: { type: Number, default: 0 }
+    },{required:true}],
     notes: { type: String, default: "" },
 
     // Klien
