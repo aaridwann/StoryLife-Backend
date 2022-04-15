@@ -46,13 +46,8 @@ export const addProject = async (req: any, res: any) => {
 
 export const addVendor = async (event:any,vendor:any,client:object,res:Response) => {
     let kategori = 'vendor.'+vendor.vendorCategory
-    let filterName = kategori+'.vendorName'
-    // Filter
-    // let filter = await projectDb.findOne({_id:event.eventId, [filterName]:[vendor.vendorName]})
-    // if(filter !== null){
-    //     return res.json({message:'Vendor sudah ada dalam list'})
-    // }
-    // Update Vendor
+    
+    // Update push Vendor on project
     let addVendor = await projectDb.updateOne({_id:event.eventId},{$push:{[kategori]:vendor}})
     return res.json({message:'Berhasil disimpan',data:addVendor})
 }

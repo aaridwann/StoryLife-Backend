@@ -85,9 +85,9 @@ export const booking = async (req: any, res: Response) => {
     }
 
 
-    let filterName = 'vendor.' + vendorInformation.vendorCategory + '.vendorName'
     
     // Filter Vendor Sudah booking atau belum
+    let filterName = 'vendor.' + vendorInformation.vendorCategory + '.vendorName'
     
     let filter = await projectDb.findOne({ _id: [bookingInformation.eventId], [filterName]: [vendorInformation.vendorName] })
     if (filter !== null) {

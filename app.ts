@@ -6,6 +6,10 @@ const UsersRoute = require('./Routes/Users/UsersRoute')
 const ProjectRoute = require('./Routes/Project/ProjectRoute')
 const VendorRoute = require('./Routes/Vendor/VendorRoutes')
 const BookingRoute = require('./Routes/Booking/BookingRoutes')
+const PackageRoute = require('./Routes/Package/PackageRoute')
+
+
+
 
 const port = process.env.PORT
 const app = express()
@@ -24,4 +28,5 @@ app.use('/auth', AuthRoute)
 app.use('/users', UsersRoute)
 app.use('/project', ProjectRoute)
 app.use('/vendor', VendorRoute)
-app.use('/booking',BookingRoute)
+app.use('/booking', BookingRoute)
+app.use('/package', PackageRoute)
