@@ -1,5 +1,4 @@
 const packageDb = require('../Models/PackageModels')
-const vendorDb = require('../Models/VendorsModels')
 const CategoryPackage = require('../Models/PackageModels')
 import { Request } from 'express'
 
@@ -56,7 +55,6 @@ class Package implements PackageList {
         this.package = req.body
         this.package.price -= this.package.discount
     }
-
 
 
     // Method Add
@@ -132,18 +130,8 @@ class Package implements PackageList {
     }
 
 
-
-
-
-
-
-
-
 }
 
 module.exports = Package
 
-function next(req: { body: DetailsPackage; params: { id: string } }, res: any, next: any) {
-    throw new Error('Function not implemented.')
-}
 

@@ -51,11 +51,11 @@ export const booking = async (req: any, res: Response) => {
     // cek event 
     const checkEvent = await projectDb.findOne({ _id: eventId, userId: _id })
     if (!checkEvent) {
-        return res.json({ message: 'Event tidak ada' })
+        return res.status(400).json({ message: 'Event tidak ada harap membuat project terlebih dahulu' })
     }
     // cek vendor
     const checkVendor = await vendorDb.findOne({ _id: idVendor, nameVendor: nameVendor })
-    if (!checkVendor) { return res.json({ message: 'Vendor tidak ada' }) }
+    if (!checkVendor) { return res.status(400).json({ message: 'Vendor tidak ada' }) }
 
 
     // Data !!!
@@ -84,11 +84,8 @@ export const booking = async (req: any, res: Response) => {
         clientPhone: checkClient.phone
     }
 
-
-    
     // Filter Vendor Sudah booking atau belum
     let filterName = 'vendor.' + vendorInformation.vendorCategory + '.vendorName'
-    
     let filter = await projectDb.findOne({ _id: [bookingInformation.eventId], [filterName]: [vendorInformation.vendorName] })
     if (filter !== null) {
         return res.status(400).json({ message: 'Vendor sudah ada dalam list' })

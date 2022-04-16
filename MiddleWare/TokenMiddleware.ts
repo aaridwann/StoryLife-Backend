@@ -10,12 +10,12 @@ export const verify = (req: any, res: any, next: any) => {
     try {
         let currentToken = jwt.verify(token, privateKey, (err: any, decode: Object) => {
             if (err) { return res.status(403).json(err) }
-            req.user = decode
             return decode
         })
         if(currentToken._id !== cookie._id){
             return res.json({message:'unAutorization'})
         }
+        req.user = currentToken
         next()
     } catch (error) {
         res.json(error)
