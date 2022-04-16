@@ -6,6 +6,7 @@ const packageDb = require("../Models/PackageModels")
 import { Response } from 'express'
 import { User } from './ProjectController'
 const { addVendor } = require('../Controller/ProjectController')
+const {addOrder} = require('../Controller/OrderController')
 
 
 const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
@@ -19,7 +20,7 @@ interface Body {
     notes: string
 }
 
-interface BookingInformation {
+export interface BookingInformation {
     eventName: String
     eventId: String
     location: String
@@ -28,7 +29,7 @@ interface BookingInformation {
     bookingStatus: 'pending' | 'accepted' | 'rejected'
     paidStatus: Boolean
 }
-interface Vendor {
+export interface Vendor {
     vendorId: String
     vendorName: String
     vendorAddress: String
@@ -37,7 +38,7 @@ interface Vendor {
     notes: String
     package: {}
 }
-interface Client {
+export interface Client {
     clientId: String
     clientName: String
     clientAddress: String
@@ -144,6 +145,7 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
             return res.json({ data: err, messaage: "gagal" })
         }
         addVendor(bookingInformation, vendorInformation, client, res)
+        addOrder(bookingInformation, vendorInformation, client, res)
     });
     
 
