@@ -3,20 +3,19 @@ const userDb = require('../Models/UsersModels')
 const jwt = require('jsonwebtoken')
 const privateKey = process.env.PRIVATE_KEY
 interface User {
-    name:string,
-    email:string, 
-    password:string
+    name: string,
+    email: string,
+    password: string
 }
 
 
 export const register = async (req: any, res: any) => {
-    const{name,email,password}:User = req.body
-    if (!name || !password || password.toString().length < 3||!email) {
+    const { name, email, password }: { name: string, email: string, password: string } = req.body
+    if (!name || !password || password.toString().length < 3 || !email) {
         return res.json({ message: 'data kosong' })
     }
-    // let { password } = req.body
     let salt = 15
-    let hashPassword = await bcrypt.hash(password, salt)
+    let hashPassword = await bcrypt.hash(password.toString(), salt)
 
     try {
         const response = await new userDb({
@@ -38,7 +37,7 @@ export const register = async (req: any, res: any) => {
 }
 
 export const login = async (req: any, res: any) => {
-    let { email, password }:User = req.body
+    let { email, password }: User = req.body
     if (!email || !password) {
         return res.status(400).send({ message: 'Data harap diisi' })
     }
@@ -64,9 +63,6 @@ export const login = async (req: any, res: any) => {
 
         res.cookie('refreshToken', refreshToken, { httpOnly: true })
         res.send({ token: token, message: 'success' })
-
-        // Cookie UNSOLVED
-
 
     } catch (error) {
         res.send({ message: error })

@@ -3,11 +3,11 @@ const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'de
 const identityList = ['ktp', 'sim']
 const vendor = new mongoose.Schema({
     // photo:{type:String, required: true},
-    userId: { type: String, required: true, unique: true },
+    vendorId: { type: String, required: true, unique: true },
     name: { type: String, required: true, unique: true },
     identity: {
         typeIdentity: { type: String, enum: identityList },
-        numberIdentity: { type: Number, required: true }
+        numberIdentity: { type: Number, required: true, unique:true }
     },
     category: { type: String, enum: categoryList },
     address: { street: { type: String, required: true }, city: { type: String, required: true }, province: { type: String, required: true }, state: { type: String, required: true } },

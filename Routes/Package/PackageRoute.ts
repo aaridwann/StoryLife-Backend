@@ -7,6 +7,13 @@ Route.post('/add', verify, verifyVendor,(req: any, res: any) => {
     const paket = new Paket(req, res)
     paket.addPackage(res)
 })
-
+Route.delete('/:id',verify,verifyVendor,(req:any,res:any) => {
+    const paket = new Paket(req, res)
+    paket.deletePackage(req,res)
+})
+Route.put('/:id',verify,verifyVendor,(req:any,res:any) => {
+    const paket = new Paket(req,res)
+    paket.editPackage(req,res)
+})
 
 module.exports = Route
