@@ -7,6 +7,7 @@ const ProjectRoute = require('./Routes/Project/ProjectRoute')
 const VendorRoute = require('./Routes/Vendor/VendorRoutes')
 const BookingRoute = require('./Routes/Booking/BookingRoutes')
 const PackageRoute = require('./Routes/Package/PackageRoute')
+const BalanceRoute = require('./Routes/Balance/BalanceRoute')
 
 
 
@@ -30,3 +31,4 @@ app.use('/project', ProjectRoute)
 app.use('/vendor', VendorRoute)
 app.use('/booking', BookingRoute)
 app.use('/package', PackageRoute)
+app.use('/balance', BalanceRoute)
