@@ -130,10 +130,11 @@ export const deleteProject = async (req: { params: { id: string }, user: User },
 // Callbacks UPDATE Project Add Vendor
 
 export const addVendor = async (event: any, vendor: any, client: object, res: Response) => {
-    let price = parseInt(vendor.package.map((x: any) => x.price))
+    let total = parseInt(vendor.package.map((x: any) => x.total))
     let kategori = 'vendor.' + vendor.vendorCategory
 
     // Update push Vendor on project
-    let addVendor = await projectDb.updateOne({ _id: event.eventId }, { $push: { [kategori]: vendor }, $inc: { totalCost: price } })
-    return res.json({ message: 'Berhasil disimpan', data: addVendor })
+    let addVendor = await projectDb.updateOne({ _id: event.eventId }, { $push: { [kategori]: vendor }, $inc: { totalCost: total } })
+    // return res.json({ message: 'Berhasil disimpan', data: addVendor })
+    console.log({ message: 'Berhasil disimpan', data: addVendor })
 }

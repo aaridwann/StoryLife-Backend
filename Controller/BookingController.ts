@@ -6,7 +6,7 @@ const packageDb = require("../Models/PackageModels")
 import { Response } from 'express'
 import { User } from './ProjectController'
 const { addVendor } = require('../Controller/ProjectController')
-const {addOrder} = require('../Controller/OrderController')
+const { addOrder } = require('../Controller/OrderController')
 
 
 const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
@@ -17,9 +17,17 @@ interface Body {
     vendorId: string
     vendorName: string
     packageId: string,
-    notes: string
+    notes: string,
+    quantity: number
 }
-
+export interface Package {
+    name: String
+    details: String
+    price: number
+    discount: number
+    quantity: number
+    total: number
+}
 export interface BookingInformation {
     eventName: String
     eventId: String
@@ -36,7 +44,7 @@ export interface Vendor {
     vendorPhone: String[]
     vendorCategory: typeof categoryVendor
     notes: String
-    package: {}
+    package: Array<Package>
 }
 export interface Client {
     clientId: String
@@ -53,12 +61,13 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         vendorId: req.body.vendorId,
         vendorName: req.body.vendorName,
         packageId: req.body.packageId,
-        notes: req.body.notes
+        notes: req.body.notes,
+        quantity: req.body.quantity
     }
 
     // // Validator
-    if (!data.eventId || !data.eventName || !data.vendorId || !data.vendorName || !data.packageId) {
-        return res.json({ message: 'Data tidak lengkap', data: "eventId,eventName,vendorId,vendorName,packageId,notes" })
+    if (!data.eventId || !req.body.quantity || !data.eventName || !data.vendorId || !data.vendorName || !data.packageId) {
+        return res.json({ message: 'Data tidak lengkap', data: "eventId,eventName,vendorId,vendorName,packageId,notes,quantity" })
     }
 
     // Cek Client
@@ -77,13 +86,21 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
     if (!checkVendor) { return res.status(400).json({ message: 'Vendor tidak ada' }) }
 
     // Cek package
-    let checkPackage = await packageDb.findOne({ vendorId: data.vendorId, 'package._id': data.packageId },{'package.$':1,_id:0})
+    let checkPackage = await packageDb.findOne({ vendorId: data.vendorId, 'package._id': data.packageId }, { 'package.$': 1, _id: 0 })
     if (!checkPackage) {
         return res.json({ message: "package not found", data: checkPackage })
     }
-
+    let total = checkPackage.package[0].price * data.quantity
 
     // Data !!!
+    const packageList: Package = {
+        name: checkPackage.package[0].packageName,
+        details: checkPackage.package[0].details,
+        price: checkPackage.package[0].price,
+        discount: checkPackage.package[0].discount,
+        quantity: data.quantity,
+        total: total,
+    }
     const bookingInformation: BookingInformation = {
         eventName: checkEvent.name,
         eventId: checkEvent._id,
@@ -94,13 +111,13 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         paidStatus: false
     }
     const vendorInformation: Vendor = {
-        vendorId: checkVendor._id,
+        vendorId: checkVendor.vendorId,
         vendorName: checkVendor.name,
         vendorAddress: checkVendor.address,
         vendorPhone: [checkVendor.phone1, checkVendor.phone1],
         vendorCategory: checkVendor.category,
         notes: data.notes,
-        package: checkPackage.package
+        package: [packageList]
     }
     const client: Client = {
         clientId: checkClient._id,
@@ -109,13 +126,13 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         clientPhone: checkClient.phone
     }
 
+
     // Filter Vendor Sudah booking atau belum
     let filterName = 'vendor.' + vendorInformation.vendorCategory + '.vendorName'
     let filter = await projectDb.findOne({ _id: [bookingInformation.eventId], [filterName]: [vendorInformation.vendorName] })
     if (filter !== null) {
         return res.status(400).json({ message: 'Vendor sudah ada dalam list' })
     }
-
 
 
     // Save Data
@@ -133,21 +150,21 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         vendorAddress: vendorInformation.vendorAddress,
         vendorPhone: vendorInformation.vendorPhone,
         vendorCategory: vendorInformation.vendorCategory,
-        package: vendorInformation.package,
+        package: [packageList],
         notes: vendorInformation.notes,
         // Information Client
         clientId: client.clientId,
         clientName: client.clientName,
         clientAddress: client.clientAddress,
         clientPhone: client.clientPhone
-    }).save((err: string) => {
+    }).save(async (err: string) => {
         if (err) {
             return res.json({ data: err, messaage: "gagal" })
         }
-        addVendor(bookingInformation, vendorInformation, client, res)
-        addOrder(bookingInformation, vendorInformation, client, res)
+        await addVendor(bookingInformation, vendorInformation, client, res)
+        await addOrder(bookingInformation, vendorInformation, client, res)
     });
-    
+
 
 
 }
