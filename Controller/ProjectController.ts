@@ -16,11 +16,11 @@ interface Project {
 }
 
 export interface User {
-    _id: string,
-    name: string,
-    email: string,
-    iat: string,
-    exp: string
+    _id: String,
+    name: String,
+    email: String,
+    iat: String,
+    exp: String
 }
 async function duplicateName(req: { body: Project, user: User }): Promise<boolean> {
     let name = await projectDb.findOne({ name: req.body.name, userId: req.user._id })

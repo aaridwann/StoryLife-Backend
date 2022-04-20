@@ -7,7 +7,7 @@ import { Response } from 'express'
 import { User } from './ProjectController'
 const { addVendor } = require('../Controller/ProjectController')
 const { addOrder } = require('../Controller/OrderController')
-
+const Schedule = require('../Controller/ScheduleController')
 
 const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
 
@@ -75,9 +75,8 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
     if (!checkClient) {
         return res.status(400).json({ data: checkClient, message: 'Client tidak ada' })
     }
-
     // cek event 
-    const checkEvent = await projectDb.findOne({ _id: data.eventId, userId: _id })
+    const checkEvent = await projectDb.findOne({ _id: data.eventId, name: data.eventName, userId: _id })
     if (!checkEvent) {
         return res.status(400).json({ message: 'Event tidak ada harap membuat project terlebih dahulu' })
     }
@@ -134,8 +133,9 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         return res.status(400).json({ message: 'Vendor sudah ada dalam list' })
     }
 
-
-    // Save Data
+    let tambahSchedule = new Schedule(vendorInformation, client, bookingInformation)
+    
+    // // Save Data
     await new bookingDb({
         eventName: bookingInformation.eventName,
         eventId: bookingInformation.eventId,
@@ -159,9 +159,10 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         clientPhone: client.clientPhone
     }).save(async (err: string) => {
         if (err) {
-            return res.json({ data: err, messaage: "gagal" })
+            return res.json({ data: err, messaage: "Booking gagal" })
         }
         await addVendor(bookingInformation, vendorInformation, client, res)
+        await tambahSchedule.addSchedule()
         await addOrder(bookingInformation, vendorInformation, client, res)
     });
 
