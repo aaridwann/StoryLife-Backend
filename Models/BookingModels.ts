@@ -19,13 +19,14 @@ const booking = new mongoose.Schema({
     vendorPhone: { type: Array, required: true },
     vendorCategory: { type: String, enum: categoryVendor },
     package: [{
-        name: { type: String, required: true },
+        _id: { type: String, required: true },
+        packageName: { type: String, required: true },
         details: { type: String, required: true },
         price: { type: Number, required: true },
         discount: { type: Number, default: 0 },
         quantity: { type: Number, required: true, min: 1 },
         total: { type: Number, default: 0 }
-    },{required:true}],
+    }, { required: true }],
     notes: { type: String, default: "" },
 
     // Klien

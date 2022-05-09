@@ -21,9 +21,9 @@ var bodyParser = require('body-parser')
 const { connect } = require('./Connection Db/ConnectionDb')
 var cors = require('cors')
 var corsOptions = {
-    origin: 'http://192.168.100.13:8000',
-    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
-  }
+  origin: 'http://192.168.100.13:3000',
+  optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
+}
 connect()
 app.use(cors(corsOptions))
 app.use(bodyParser.json())

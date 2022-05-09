@@ -11,7 +11,7 @@ const project = new mongoose.Schema({
     date: { type: Date, required: true },
     location: { type: Object, required: true, default: '' },
     category: { type: String,enum:categoryProject, required: true },
-    vendor: {type:Object, default:null},
+    vendor: {type:Array, default:null},
     totalCost: { type: Number, required: true, default: 0 }
 
 })

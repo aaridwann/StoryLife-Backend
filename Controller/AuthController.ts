@@ -1,3 +1,4 @@
+import { Response } from 'express'
 const bcrypt = require('bcrypt');
 const userDb = require('../Models/UsersModels')
 const jwt = require('jsonwebtoken')
@@ -7,9 +8,14 @@ interface User {
     email: string,
     password: string
 }
+interface Login {
+    email: string
+    password: string
+}
 
 
-export const register = async (req: any, res: any) => {
+export const register = async (req: { body: User }, res: Response) => {
+    console.log(req.body)
     const { name, email, password }: { name: string, email: string, password: string } = req.body
     if (!name || !password || password.toString().length < 3 || !email) {
         return res.json({ message: 'data kosong' })
@@ -19,7 +25,7 @@ export const register = async (req: any, res: any) => {
 
     try {
         const response = await new userDb({
-            name: name.toLowerCase(),
+            name: name.toLowerCase().trim(),
             password: hashPassword,
             email: email.trim(),
         }).save((err: string) => {
@@ -36,8 +42,8 @@ export const register = async (req: any, res: any) => {
 
 }
 
-export const login = async (req: any, res: any) => {
-    let { email, password }: User = req.body
+export const login = async (req: {body:Login}, res: any) => {
+    let { email, password } = req.body
     if (!email || !password) {
         return res.status(400).send({ message: 'Data harap diisi' })
     }
@@ -70,7 +76,7 @@ export const login = async (req: any, res: any) => {
 
 }
 
-export const refreshToken = async (req: any, res: any) => {
+export const refreshToken = async (req: {cookies:{refreshToken:string}}, res: Response) => {
     if (!req.cookies.refreshToken) {
         return res.status(403).json('Please login')
     }
@@ -84,7 +90,7 @@ export const refreshToken = async (req: any, res: any) => {
     res.send({ accessToken: accessToken })
 }
 
-export const logout = async (req: any, res: any) => {
+export const logout = async (req: {cookies:{refreshToken:string}}, res: Response) => {
     let { refreshToken } = req.cookies
     if (!refreshToken) {
         return res.status(403).json({ status: 'You are already logout' })

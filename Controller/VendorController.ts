@@ -8,7 +8,7 @@ const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'de
 export interface Query {
     name: String
     category: String,
-    date: Date
+    date: string
 }
 interface VendorData {
     vendorId: String,
@@ -17,6 +17,7 @@ interface VendorData {
     hasBooked?: any
 }
 
+// Sign up as Vendors
 export const addVendor = async (req: any, res: any) => {
     const userId = req.user._id
     const { name, identity: { typeIdentity, numberIdentity }, categoryVendor, address: { street, city, province, state }, phone1, phone2, bankAccount: { bankName, accountNumber } } = req.body
@@ -60,12 +61,18 @@ export const addVendor = async (req: any, res: any) => {
 
 
 }
-
+// get Vendor by Query
 export const getVendor = async (req: { query: Query }, res: Response) => {
+    let tgl = (req.query.date as string).split(' ').map((x) => Number(x)).reverse()
     let { name, category, date } = req.query
     name = name.trim()
+    let tanggal = new Date(tgl[0], tgl[1] - 1, tgl[2] + 1).toISOString()
+
+
     let nameReg = new RegExp(`${name}`, 'i')
     let categoryReg = new RegExp(`${category}`)
+
+
     let response = await vendorDb.aggregate([
         {
             $lookup: {
@@ -75,14 +82,14 @@ export const getVendor = async (req: { query: Query }, res: Response) => {
                 as: 'schedules'
             }
         },
-        { $match: { name: {$regex:nameReg},category:{$regex:categoryReg} } },
+        { $match: { name: { $regex: nameReg }, category: { $regex: categoryReg } } },
         { $project: { name: 1, 'schedules': '$schedules.scheduleList.eventDate' } }
     ])
 
     res.json(response)
 
 }
-
+// Get Vendor Schedule
 export const getVendorSchedule = async (req: { query: Query }, res: Response) => {
     let { name, date } = req.query
     let nameReg = new RegExp(`${name}`, 'i')

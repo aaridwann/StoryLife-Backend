@@ -1,13 +1,18 @@
-import { addProject, deleteProject, editProject, getProjectById } from "../../Controller/ProjectController"
+import { addProject, deleteProject, deleteVendor, editProject, getProjectById } from "../../Controller/ProjectController"
 import ClientMiddleware from "../../MiddleWare/ClientMiddleware"
 
 const { verify } = require('../../MiddleWare/TokenMiddleware')
 const express = require('express')
 const router = express.Router()
-
+// Get Project
 router.get('/', verify, getProjectById)
-router.post('/addproject', verify,ClientMiddleware, addProject)
-router.put('/edit/:id', verify,ClientMiddleware, editProject)
-router.delete('/delete/:id', verify,ClientMiddleware, deleteProject)
+// Add Project Route
+router.post('/addproject', verify, ClientMiddleware, addProject)
+// Edit Project
+router.put('/edit/:id', verify, ClientMiddleware, editProject)
+// Delete Project
+router.delete('/delete/:id', verify, ClientMiddleware, deleteProject)
+// Delete Vendor
+router.delete('/vendor', verify, ClientMiddleware, deleteVendor)
 
 module.exports = router

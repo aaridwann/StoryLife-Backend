@@ -4,6 +4,7 @@ const vendorDb = require('../Models/VendorsModels')
 const userDb = require('../Models/UsersModels')
 const packageDb = require("../Models/PackageModels")
 import { Response } from 'express'
+import { ObjectId } from 'mongodb'
 import { User } from './ProjectController'
 const { addVendor } = require('../Controller/ProjectController')
 const { addOrder } = require('../Controller/OrderController')
@@ -21,7 +22,8 @@ interface Body {
     quantity: number
 }
 export interface Package {
-    name: String
+    _id: string
+    packageName: String
     details: String
     price: number
     discount: number
@@ -52,9 +54,23 @@ export interface Client {
     clientAddress: String
     clientPhone: String
 }
+interface Request {
+    headers: {
+        cookie: {
+            id: string
+        }
+    },
+    user: User,
+    body: Body
+}
 
-export const booking = async (req: { user: User, body: Body }, res: Response) => {
+export const booking = async (req: Request, res: Response) => {
+
+
+    // Initial _id by middleware JWT
     let { _id } = req.user
+
+    // Initial Body by request body
     let data: Body = {
         eventId: req.body.eventId,
         eventName: req.body.eventName,
@@ -65,7 +81,7 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         quantity: req.body.quantity
     }
 
-    // // Validator
+    // // Validator Data
     if (!data.eventId || !req.body.quantity || !data.eventName || !data.vendorId || !data.vendorName || !data.packageId) {
         return res.json({ message: 'Data tidak lengkap', data: "eventId,eventName,vendorId,vendorName,packageId,notes,quantity" })
     }
@@ -85,20 +101,34 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
     if (!checkVendor) { return res.status(400).json({ message: 'Vendor tidak ada' }) }
 
     // Cek package
-    let checkPackage = await packageDb.findOne({ vendorId: data.vendorId, 'package._id': data.packageId }, { 'package.$': 1, _id: 0 })
-    if (!checkPackage) {
-        return res.json({ message: "package not found", data: checkPackage })
+    let checkPackage: Package = {
+        _id: '',
+        packageName: '',
+        details: '',
+        price: 0,
+        discount: 0,
+        quantity: 0,
+        total: 0
+    };
+    try {
+        let cekPackageQuery = await packageDb.findOne({ vendorId: data.vendorId, 'package._id': new ObjectId(data.packageId) }, { 'package.$': 1, _id: 0 })
+        checkPackage = cekPackageQuery.package[0]
+        checkPackage.price = checkPackage.price * data.quantity
+        checkPackage.quantity = data.quantity
+    } catch (error) {
+        return res.status(400).json({ message: error, data: 'Package Tidak ada' })
     }
-    let total = checkPackage.package[0].price * data.quantity
 
-    // Data !!!
+
+    // Initial Data from Check Package !!!
     const packageList: Package = {
-        name: checkPackage.package[0].packageName,
-        details: checkPackage.package[0].details,
-        price: checkPackage.package[0].price,
-        discount: checkPackage.package[0].discount,
+        _id: checkPackage._id,
+        packageName: checkPackage.packageName,
+        details: checkPackage.details,
+        price: checkPackage.price,
+        discount: checkPackage.discount,
         quantity: data.quantity,
-        total: total,
+        total: checkPackage.price * data.quantity,
     }
     const bookingInformation: BookingInformation = {
         eventName: checkEvent.name,
@@ -127,15 +157,13 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
 
 
     // Filter Vendor Sudah booking atau belum
-    let filterName = 'vendor.' + vendorInformation.vendorCategory + '.vendorName'
-    let filter = await projectDb.findOne({ _id: [bookingInformation.eventId], [filterName]: [vendorInformation.vendorName] })
+    let filter = await projectDb.findOne({ _id: bookingInformation.eventId, 'vendor.vendorId': vendorInformation.vendorId }, { 'vendor.$': 1 })
     if (filter !== null) {
-        return res.status(400).json({ message: 'Vendor sudah ada dalam list' })
+        return res.status(400).json({ message: 'Vendor sudah ada dalam list', data: filter })
     }
 
-    let tambahSchedule = new Schedule(vendorInformation, client, bookingInformation)
-    
-    // // Save Data
+
+    // Save Data in booking Database
     await new bookingDb({
         eventName: bookingInformation.eventName,
         eventId: bookingInformation.eventId,
@@ -150,7 +178,7 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
         vendorAddress: vendorInformation.vendorAddress,
         vendorPhone: vendorInformation.vendorPhone,
         vendorCategory: vendorInformation.vendorCategory,
-        package: [packageList],
+        package: packageList,
         notes: vendorInformation.notes,
         // Information Client
         clientId: client.clientId,
@@ -160,10 +188,21 @@ export const booking = async (req: { user: User, body: Body }, res: Response) =>
     }).save(async (err: string) => {
         if (err) {
             return res.json({ data: err, messaage: "Booking gagal" })
+        } else {
+            let msgAdd,msgSchedule,msgAddOrder:String =''
+
+            // Callback ke Function tambah vendor
+            await addVendor(bookingInformation, vendorInformation, client, res, msgAdd)
+
+            // Callback ke Function tambah Schedule
+            // let tambahSchedule = new Schedule(vendorInformation, client, bookingInformation)
+            // await tambahSchedule.addSchedule()
+
+            // Callback ke Function tambah Order Vendor
+            // await addOrder(bookingInformation, vendorInformation, client, res)
+
+            res.json({ message: `Booking succsess, ${msgAdd}` })
         }
-        await addVendor(bookingInformation, vendorInformation, client, res)
-        await tambahSchedule.addSchedule()
-        await addOrder(bookingInformation, vendorInformation, client, res)
     });
 
 
