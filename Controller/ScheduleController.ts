@@ -20,7 +20,8 @@ module.exports = class Schedule {
             eventDate: this.event.eventDate
         }
         try {
-            await scheduleDb.updateOne<ScheduleVendor>({ vendorId: this.vendor.vendorId, vendorName: this.vendor.vendorName }, { $push: { scheduleList: data } })
+            await scheduleDb.updateOne<ScheduleVendor>({ vendorId: this.vendor.vendorId, vendorName: this.vendor.vendorName },
+            { $push: { scheduleList: data } })
             this.message = { message: 'Add Schedule Is Success' }
         } catch (error) {
             this.message = { message: 'Add Schedule Is Fail => ' + error }

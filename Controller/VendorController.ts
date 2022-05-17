@@ -1,15 +1,25 @@
 import { createVendorSchedule } from "../CreateDb/createSchedule"
-import { Response } from 'express'
+import { query, Response } from 'express'
 import { scheduleDb } from "../Models/ScheduleVendorModels"
 import { orderDb } from "../Models/OrderModels"
+import { getVendorAggregate } from '.././Controller/Vendor Function/VendorFunction'
 const vendorDb = require('../Models/VendorsModels')
 const userDb = require('../Models/UsersModels')
 const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
+
 export interface Query {
-    name: String
-    category: String,
+    id: string
+    name: string
+    category: string,
     date: string
 }
+
+interface Params {
+    id: string
+    name: string
+    category: string
+}
+
 interface VendorData {
     vendorId: String,
     vendorName: String,
@@ -61,34 +71,42 @@ export const addVendor = async (req: any, res: any) => {
 
 
 }
+
 // get Vendor by Query
 export const getVendor = async (req: { query: Query }, res: Response) => {
-    let tgl = (req.query.date as string).split(' ').map((x) => Number(x)).reverse()
-    let { name, category, date } = req.query
-    name = name.trim()
-    let tanggal = new Date(tgl[0], tgl[1] - 1, tgl[2] + 1).toISOString()
+    // let tgl = (req.query.date as string).split(' ').map((x) => Number(x)).reverse()
+
+    let params: Params = {
+        name: req.query.name,
+        category: req.query.category,
+        id: req.query.id,
+    }
+
+    // name = name.trim()
+    // let tanggal = new Date(tgl[0], tgl[1] - 1, tgl[2] + 1).toISOString()
 
 
-    let nameReg = new RegExp(`${name}`, 'i')
-    let categoryReg = new RegExp(`${category}`)
+    // let nameReg = new RegExp(`${params.name}`, 'i')
+    // let categoryReg = new RegExp(`${params.category}`)
 
 
-    let response = await vendorDb.aggregate([
-        {
-            $lookup: {
-                from: 'schedules',
-                localField: 'vendorId',
-                foreignField: 'vendorId',
-                as: 'schedules'
-            }
-        },
-        { $match: { name: { $regex: nameReg }, category: { $regex: categoryReg } } },
-        { $project: { name: 1, 'schedules': '$schedules.scheduleList.eventDate' } }
-    ])
-
+    // let response = await vendorDb.aggregate([
+    //     {
+    //         $lookup: {
+    //             from: 'schedules',
+    //             localField: 'vendorId',
+    //             foreignField: 'vendorId',
+    //             as: 'schedules'
+    //         }
+    //     },
+    //     { $match: { vendorId: id, name: { $regex: nameReg }, category: { $regex: categoryReg } } },
+    //     { $project: { name: 1, 'schedules': '$schedules.scheduleList.eventDate' } }
+    // ])
+    let response = await getVendorAggregate(params, vendorDb)
     res.json(response)
 
 }
+
 // Get Vendor Schedule
 export const getVendorSchedule = async (req: { query: Query }, res: Response) => {
     let { name, date } = req.query

@@ -130,6 +130,7 @@ export const booking = async (req: Request, res: Response) => {
         quantity: data.quantity,
         total: checkPackage.price * data.quantity,
     }
+
     const bookingInformation: BookingInformation = {
         eventName: checkEvent.name,
         eventId: checkEvent._id,
@@ -139,6 +140,7 @@ export const booking = async (req: Request, res: Response) => {
         bookingStatus: 'pending',
         paidStatus: false
     }
+
     const vendorInformation: Vendor = {
         vendorId: checkVendor.vendorId,
         vendorName: checkVendor.name,
@@ -148,6 +150,7 @@ export const booking = async (req: Request, res: Response) => {
         notes: data.notes,
         package: [packageList]
     }
+
     const client: Client = {
         clientId: checkClient._id,
         clientName: checkClient.name,
@@ -185,25 +188,24 @@ export const booking = async (req: Request, res: Response) => {
         clientName: client.clientName,
         clientAddress: client.clientAddress,
         clientPhone: client.clientPhone
-    }).save(async (err: string) => {
-        if (err) {
-            return res.json({ data: err, messaage: "Booking gagal" })
-        } else {
-            let msgAdd,msgSchedule,msgAddOrder:String =''
+    })
+        .save(async (err: string) => {
+            if (err) {
+                return res.json({ data: err, messaage: "Booking gagal" })
+            } else {
+                // Callback ke Function tambah vendor
+                await addVendor(bookingInformation, vendorInformation, res)
 
-            // Callback ke Function tambah vendor
-            await addVendor(bookingInformation, vendorInformation, client, res, msgAdd)
+                // Callback ke Function tambah Schedule
+                let tambahSchedule = new Schedule(vendorInformation, client, bookingInformation)
+                await tambahSchedule.addSchedule()
 
-            // Callback ke Function tambah Schedule
-            // let tambahSchedule = new Schedule(vendorInformation, client, bookingInformation)
-            // await tambahSchedule.addSchedule()
+                // Callback ke Function tambah Order Vendor
+                await addOrder(bookingInformation, vendorInformation, client, res)
 
-            // Callback ke Function tambah Order Vendor
-            // await addOrder(bookingInformation, vendorInformation, client, res)
-
-            res.json({ message: `Booking succsess, ${msgAdd}` })
-        }
-    });
+                res.json({ message: `Booking succsess, ` })
+            }
+        });
 
 
 

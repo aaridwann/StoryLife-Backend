@@ -1,4 +1,4 @@
-import { query, Response } from 'express'
+import { Response } from 'express'
 import { ObjectId } from 'mongodb'
 import { categoryProject } from '../Models/ProjectModels'
 import { Vendor } from './BookingController'
@@ -120,7 +120,6 @@ export const addProject = async (req: { body: Project, user: User }, res: Respon
 
 }
 
-
 // Update Project
 export const editProject = async (req: { body: Project, user: User, params: { id: string } }, res: Response) => {
     let dataEdit: Project = {
@@ -173,28 +172,44 @@ export const deleteVendor = async (req: { query: { idEvent: string, nameEvent: s
         return res.status(400).json({ message: 'Data Tidak lengkap', FormatData: 'idEvent, nameEvent, vendorId, vendorName  ' })
     }
     try {
-        let response = await projectDb.updateOne({ _id: new ObjectId(idEvent), name: { $regex: nameEvent, $options: 'i' }, 'vendor.vendorId': vendorId, 'vendor.vendorName': { $regex: vendorName, $options: 'i' } },
-            { $unset: { 'vendor.$': { 'vendorName': '', vendorId: '', vendorAddress: '', vendorPhone: '', notes: '', package: '' } } })
+        let response = await projectDb.updateOne({ _id: new ObjectId(idEvent), name: { $regex: nameEvent, $options: 'i' }, 'vendor.vendorId': vendorId },
+            { $pull: { 'vendor': { 'vendorId': vendorId } } })
         res.json({ message: 'Success Delete Vendor', data: response })
     } catch (error) {
         res.status(400).json({ message: 'Vendor Tidak ada', data: error })
     }
 }
 
-
 // Callbacks UPDATE Vendor Project Add Vendor
-export const addVendor = async (event: { eventId: string }, vendor: Vendor, res: Response, msgAdd: string) => {
+export const addVendor = async (event: { eventId: string }, vendor: Vendor, res: Response) => {
+   
     // total
     let total = vendor.package.map((x: { total: number }) => x.total)
 
-    // Update push Vendor on project
-    try {
-        await projectDb.updateOne({ _id: event.eventId, 'vendor.vendorCategory': `${vendor.vendorCategory}` },
-            { $set: { 'vendor.$': vendor }, $inc: { totalCost: `${total}` } })
-        return msgAdd = 'Add Vendor Success'
-    } catch (error) {
-        console.log(error)
-        return res.status(400).json(error)
+    let check = await projectDb.findOne({ _id: event.eventId, 'vendor.vendorCategory': `${vendor.vendorCategory}` })
+    if (check === null) {
+        await pushVendor()
+    } else {
+        await setVendor()
     }
-    // console.log({ message: 'Berhasil disimpan', data: addVendor })
+
+    // Push vendor function jika category sudah di delete
+    async function pushVendor() {
+        try {
+            let response = await projectDb.updateOne({ _id: event.eventId }, { $push: { vendor: vendor } })
+            return res.json(response)
+        } catch (error) {
+            return res.json(error)
+        }
+    }
+    // Update set Vendor jika category ada
+    async function setVendor() {
+        try {
+            await projectDb.updateOne({ _id: event.eventId, 'vendor.vendorCategory': `${vendor.vendorCategory}` },
+                { $set: { 'vendor.$': vendor }, $inc: { totalCost: `${total}` } })
+            return
+        } catch (error) {
+            return res.status(400).json(error)
+        }
+    }
 }

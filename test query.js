@@ -52,3 +52,20 @@ let update = {
 
 db.projects.updateOne({ _id: ObjectId('62781b4112f1c41858a9a4d5'), 'vendor.category': 'makeup artist' },
     { $set: { 'vendor.$.price': 6000, 'vendor.$.name': 'Jian Qaumi Makeup Artist', 'vendor.$.package': ['wedding', 'engagement'] } })
+
+
+db.users.aggregate([
+    { $addFields: { 'userId': { $toString: '$_id' } } },
+    {
+        $lookup: {
+            from: 'projects',
+            localField: 'userId',
+            foreignField: 'userId',
+            as: 'Project'
+        }
+    },
+    {$unwind:'$Project'},
+    {$project:{name:'$name',
+    project:{name:'$Project.name',date:'$Project.date'}}
+}
+])

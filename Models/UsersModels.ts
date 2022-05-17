@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
-const users = new Schema({
+const usersDb = new Schema({
     name: { type: String, required: true, unique: false },
     address: { type: String, default: '' },
     phone:{type:String,default:''},
@@ -11,4 +11,4 @@ const users = new Schema({
     refreshToken: { type: String, default: '' }
 }, { timestamps: true })
 
-module.exports = mongoose.model('users', users)
+export const users = mongoose.model('users', usersDb)

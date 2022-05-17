@@ -1,4 +1,5 @@
 import { Response } from 'express'
+var cookieParser = require('cookie-parser')
 const bcrypt = require('bcrypt');
 const userDb = require('../Models/UsersModels')
 const jwt = require('jsonwebtoken')
@@ -42,7 +43,7 @@ export const register = async (req: { body: User }, res: Response) => {
 
 }
 
-export const login = async (req: {body:Login}, res: any) => {
+export const login = async (req: { body: Login }, res: Response) => {
     let { email, password } = req.body
     if (!email || !password) {
         return res.status(400).send({ message: 'Data harap diisi' })
@@ -67,8 +68,10 @@ export const login = async (req: {body:Login}, res: any) => {
         // // Input Refresh token to dataBase
         await userDb.updateOne({ email: email }, { $set: { refreshToken: refreshToken } })
 
-        res.cookie('refreshToken', refreshToken, { httpOnly: true })
-        res.send({ token: token, message: 'success' })
+
+        // res.cookie('refreshToken', refreshToken, { httpOnly: true })
+        res.cookie('test', 'test') 
+        res.json({ token: token, message: 'success' })
 
     } catch (error) {
         res.send({ message: error })
@@ -76,7 +79,7 @@ export const login = async (req: {body:Login}, res: any) => {
 
 }
 
-export const refreshToken = async (req: {cookies:{refreshToken:string}}, res: Response) => {
+export const refreshToken = async (req: { cookies: { refreshToken: string } }, res: Response) => {
     if (!req.cookies.refreshToken) {
         return res.status(403).json('Please login')
     }
@@ -90,12 +93,13 @@ export const refreshToken = async (req: {cookies:{refreshToken:string}}, res: Re
     res.send({ accessToken: accessToken })
 }
 
-export const logout = async (req: {cookies:{refreshToken:string}}, res: Response) => {
-    let { refreshToken } = req.cookies
+export const logout = async (req: any, res: Response) => {
+    return res.json(cookieParser.JSONCookies(req.cookies))
+    let { refreshToken } = req.headers.cookie
     if (!refreshToken) {
         return res.status(403).json({ status: 'You are already logout' })
     }
-    let decode = await jwt.verify(req.cookies.refreshToken, process.env.REFRESH_TOKEN)
+    let decode = await jwt.verify(req.headers.cookie.refreshToken, process.env.REFRESH_TOKEN)
     if (!decode) { return res.status(403) }
     let response = await userDb.updateOne({ _id: decode._id }, { $set: { refreshToken: '' } })
     res.clearCookie('refreshToken')

@@ -1,8 +1,9 @@
-const mongoose = require('mongoose');
+ const mongo  = require('mongoose');
+
 const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
 const bookingStatus = ['rejected', 'pending', 'accepted']
 
-const booking = new mongoose.Schema({
+const booking = new mongo.Schema({
     // Booking information
     eventName: { type: String, required: true },
     eventId: { type: String, required: true },
@@ -37,4 +38,4 @@ const booking = new mongoose.Schema({
 
 })
 
-module.exports = mongoose.model('booking', booking)
+module.exports = mongo.model('booking', booking)
