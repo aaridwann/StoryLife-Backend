@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 const usersDb = new Schema({
     name: { type: String, required: true, unique: false },
     address: { type: String, default: '' },
-    phone:{type:String,default:''},
+    phone: { type: String, default: '' },
     verify: { type: Boolean, default: false },
     vendor: { type: Boolean, default: false },
     email: { type: String, required: true, unique: true },

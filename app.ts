@@ -24,7 +24,7 @@ var cors = require('cors')
 app.use(cookieParser())
 var corsOptions = {
   credentials: true,
-  origin: 'http://192.168.100.13:3000',
+  // origin: 'http://192.168.100.13:3000',
   optionsSuccessStatus: 200, // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 connect()

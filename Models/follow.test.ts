@@ -1,5 +1,5 @@
 import { ObjectId } from "mongodb";
-let url = 'mongodb://127.0.0.1/StoryLife'
+let url = 'mongodb://localhost:27017/StoryLife'
 var { mongoose } = require("mongoose");
 const { followDb } = require("./FollowModels");
 const { users } = require('./UsersModels')
@@ -10,10 +10,26 @@ interface Input {
     idTarget: string
 }
 
-async function get(x: string) {
-    let res = await followDb.find({})
-    return console.log(res)
+// Get Follow Function
+async function getFollow(id: string, method: 1 | 2 | 3) {
+    let met ;
+    if (method == 1) {
+        met = { following: 1 }
+    } else if (method == 2) {
+        met = { follower: 1 }
+    } else{
+        met = {following:1 ,follower:1}
+    }
+
+    try {
+        let res = await followDb.findOne({ userId: id }, { _id: 0, userId: 1, ...met })
+        return console.log(res)
+    } catch (error) {
+        return console.log(error)
+    }
 }
+
+// Following function
 
 async function following(x: Input) {
     if (!x.idTarget || !x.userId) {
@@ -33,7 +49,7 @@ async function following(x: Input) {
     // Push Proccess
     try {
         let follow1 = await followDb.updateOne({ userId: x.userId }, { $push: { following: { _id: new ObjectId(`${x.idTarget}`), timeStamps: Date.now() } } })
-        let follow2 = await followDb.updateOne({ userId: x.idTarget }, { $push: { follower: { _id: new ObjectId(`${x.userId}`), timestamps: Date.now() } } })
+        let follow2 = await followDb.updateOne({ userId: x.idTarget }, { $push: { follower: { _id: new ObjectId(`${x.userId}`), timeStamps: Date.now() } } })
         if (follow1.modifiedCount == 1 && follow2.modifiedCount == 1) {
             return console.log({ message: 'Proccess Follow Success', data: follow1, follow2 })
         } else {
@@ -46,7 +62,7 @@ async function following(x: Input) {
 
 
 }
-
+// Follower function
 async function unFollow(x: Input) {
     if (!x.idTarget || !x.userId) {
         return console.log('harap isi userId  atau idTarget')
@@ -78,7 +94,7 @@ async function unFollow(x: Input) {
 
 let input: Input = {
     userId: '625acf909f5986c218a0260a',
-    idTarget: '625ad1f028e8cd8520fec38a'
+    idTarget: '625b06a2fa640f4f685f2037'
 }
 let inputNotFollow: Input = {
     userId: '625acf909f5986c218a0260a',
@@ -98,21 +114,30 @@ let result = {
     _id: new ObjectId("6283b5f5fc5183e46f7d8ddd"),
     follower: []
 }
-test('test Following', async () => {
-    await following(input)
-    await following(inputNotFollow)
-    await following(inputfalse)
-    await following(inputnull)
 
-
+test('Get Follower by id and ,method', async () => {
+    await getFollow('625acf909f5986c218a0260a', 1)
+    await getFollow('625b06a2fa640f4f685f2037', 2)
+    await getFollow('625b06a2fa640f4f685f2037', 3)
 })
 
-test('unfollow Function', async () => {
-    await unFollow(input)
-    await unFollow(inputNotFollow)
-    await unFollow(inputfalse)
-    await unFollow(inputnull)
-})
+// test('test Following', async () => {
+//     await following(input)
+//     await following(inputNotFollow)
+//     await following(inputfalse)
+//     await following(inputnull)
+// })
+
+
+
+// test('unfollow Function', async () => {
+//     await unFollow(input)
+//     await unFollow(inputNotFollow)
+//     await unFollow(inputfalse)
+//     await unFollow(inputnull)
+// })
+
+
 beforeAll(async () => {
     await mongoose.connect(url)
 })
