@@ -11,6 +11,8 @@ beforeAll(async () => {
 
 async function getVendor(x) {
     let res = await vendor.aggregate([
+        
+        // Lookup packageList
         {
             $lookup: {
                 from: 'packagelists',
@@ -19,7 +21,27 @@ async function getVendor(x) {
                 as: 'Package'
             }
         },
+
+        // addField UserId
+        { $addFields: { userId: '$vendorId' } },
+
+        // lookup follow
+        {
+            $lookup: {
+                from: 'follows',
+                localField: 'userId',
+                foreignField: 'userId',
+                as: 'Follow'
+            }
+        },
+
+        // Match
         { $match: { $or: [{ vendorId: x.id }, { name: x.name }, { category: x.category }] } },
+
+        // unwind
+        { $unwind: { path: '$Follow', preserveNullAndEmptyArrays: true } },
+
+        // Projectsi
         {
             $project: {
                 _id: '$vendorId',
@@ -28,14 +50,14 @@ async function getVendor(x) {
                 category: '$category',
                 phone: ['$phone1', '$phone2'],
                 package: '$Package.package',
+                follow: { following: '$Follow.following', follower: '$Follow.follower' }
             }
         }
     ])
     if (res[0] === undefined) {
         return null
     } else {
-        // return console.log(res)
-        return res
+        return console.log(res[0])
     }
 }
 
@@ -54,7 +76,7 @@ async function get(x) {
 
 
 test('aggregate', async () => {
-    let params = { id: '625edb85f8412027c58de6db', name: 'concept photography', category: 'decoration' }
+    let params = { id: '625acf909f5986c218a0260a', name: '', category: 'decoration' }
     let undefinedParams = { id: '', name: '', category: '' }
 
     // expect(await getVendor(params)).toBeDefined()
@@ -71,8 +93,8 @@ test('get by name', async () => {
     let titid = {
         name: 'hahah'
     }
-    let res = 'tidak ada'
-    expect(await get(params)).toEqual(params.name)
-    expect(await get(titid)).toBe(res)
+    // let res = 'tidak ada'
+    // expect(await get(params)).toEqual(params.name)
+    // expect(await get(titid)).toBe(res)
 })
 

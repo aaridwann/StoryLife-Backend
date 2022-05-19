@@ -1,8 +1,8 @@
 import { Response } from 'express'
 import { ObjectId } from 'mongodb'
-import { categoryProject } from '../Models/ProjectModels'
+import { categoryProject } from '../Models/EventModels'
 import { Vendor } from './BookingController'
-const projectDb = require('../Models/ProjectModels')
+const { eventDb: projectDb } = require('../Models/EventModels')
 interface Location {
     street: string,
     city: string,
@@ -182,7 +182,7 @@ export const deleteVendor = async (req: { query: { idEvent: string, nameEvent: s
 
 // Callbacks UPDATE Vendor Project Add Vendor
 export const addVendor = async (event: { eventId: string }, vendor: Vendor, res: Response) => {
-   
+
     // total
     let total = vendor.package.map((x: { total: number }) => x.total)
 

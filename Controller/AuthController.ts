@@ -2,7 +2,7 @@ import { Response } from 'express'
 import { CreateBallanceAccount } from './Function/CreateBallanceAccount';
 import { CreateFollowDb } from './Function/CreateFollowDb';
 const bcrypt = require('bcrypt');
-const { users } = require('../Models/UsersModels')
+const { userDb } = require('../Models/UsersModels')
 const jwt = require('jsonwebtoken')
 
 const privateKey = process.env.PRIVATE_KEY
@@ -32,7 +32,7 @@ export const register = async (req: { body: User }, res: Response) => {
 
     try {
         // Input to user Database
-        const response = new users({
+        const response = new userDb({
             name: name.toLowerCase().trim(),
             password: hashPassword,
             email: email.trim(),
@@ -44,9 +44,9 @@ export const register = async (req: { body: User }, res: Response) => {
 
                 } else {
                     // Create Follow Document
-                    let createFollowDb = await CreateFollowDb(email, users)
+                    let createFollowDb = await CreateFollowDb(email, userDb)
                     // Create Ballance account Document
-                    let createBallanceAccount = await CreateBallanceAccount(email, users)
+                    let createBallanceAccount = await CreateBallanceAccount(email, userDb)
                     return res.status(201).json({ data: { response, 'follow': createFollowDb, 'balance': createBallanceAccount }, message: 'success' })
                 }
             })
@@ -69,7 +69,7 @@ export const login = async (req: { body: Login }, res: Response) => {
 
     try {
         // Find user
-        const response = await users.findOne({ email: email })
+        const response = await userDb.findOne({ email: email })
 
         // handler if user not found
         if (!response) {
@@ -91,7 +91,7 @@ export const login = async (req: { body: Login }, res: Response) => {
         const refreshToken = jwt.sign({ _id: response._id, name: response.name, email: response.email }, process.env.REFRESH_TOKEN, { expiresIn: '1d' })
 
         // // Input Refresh token to dataBase
-        await users.updateOne({ email: email }, { $set: { refreshToken: refreshToken } })
+        await userDb.updateOne({ email: email }, { $set: { refreshToken: refreshToken } })
 
         // Send cookie
         res.cookie('refreshToken', refreshToken, { httpOnly: true })
@@ -125,7 +125,7 @@ export const refreshToken = async (req: { cookies: { refreshToken: string } }, r
     const refreshToken = jwt.sign({ _id: refresh._id, name: refresh.name, email: refresh.email }, process.env.REFRESH_TOKEN, { expiresIn: '1d' })
 
     // Update refresh token in database
-    await users.updateOne({ _id: refresh._id }, { $set: { refreshToken: refreshToken } })
+    await userDb.updateOne({ _id: refresh._id }, { $set: { refreshToken: refreshToken } })
 
     // Send json Access Token 
     return res.send({ accessToken: accessToken })
@@ -146,7 +146,7 @@ export const logout = async (req: any, res: Response) => {
     if (!decode) { return res.status(403) }
 
     // Delete refresh token from database user
-    let response = await users.updateOne({ _id: decode._id }, { $set: { refreshToken: '' } })
+    let response = await userDb.updateOne({ _id: decode._id }, { $set: { refreshToken: '' } })
 
     // Clear cookie
     res.clearCookie('refreshToken')

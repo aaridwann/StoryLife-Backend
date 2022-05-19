@@ -5,7 +5,7 @@ const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'de
 
 const identityList = ['ktp', 'sim']
 
-const vendor = new mongoose.Schema({
+const vendorDb = new mongoose.Schema({
     // photo:{type:String, required: true},
     vendorId: { type: String, required: true, unique: true },
     name: { type: String, required: true, unique: true },
@@ -23,5 +23,5 @@ const vendor = new mongoose.Schema({
     status: { type: Boolean, default: false },
     balance: { type: Number, default: 0 }
 })
-// export const vendor = mongoose.model('vendor',vendorDb)
-module.exports = mongoose.model('vendor', vendor)
+export const vendor = mongoose.model('vendor', vendorDb)
+// module.exports = mongoose.model('vendor', vendorDb)

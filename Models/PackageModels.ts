@@ -7,7 +7,7 @@ const packageList = new mongoose.Schema({
     vendorName: { type: String, required: true, unique: true },
     package: [{
         packageName: { type: String, required: true },
-        category: { type:String, enum:CategoryPackage, required: true },
+        category: { type: String, enum: CategoryPackage, required: true },
         price: { type: Number, required: true, min: 6 },
         details: { type: String, required: true, min: 25 },
         discount: { type: Number, default: 0 },
@@ -16,6 +16,4 @@ const packageList = new mongoose.Schema({
 },
     { timestamps: true })
 
-const packagedb = mongoose.model('packageList', packageList)
-
-module.exports = packagedb
+export const packagedb = mongoose.model('packageList', packageList)

@@ -1,7 +1,7 @@
 const bookingDb = require('../Models/BookingModels')
-const projectDb = require('../Models/ProjectModels')
+const { eventDb: projectDb } = require('../Models/EventModels')
 const vendorDb = require('../Models/VendorsModels')
-const userDb = require('../Models/UsersModels')
+const { userDb } = require('../Models/UsersModels')
 const packageDb = require("../Models/PackageModels")
 import { Response } from 'express'
 import { ObjectId } from 'mongodb'
@@ -193,6 +193,7 @@ export const booking = async (req: Request, res: Response) => {
             if (err) {
                 return res.json({ data: err, messaage: "Booking gagal" })
             } else {
+
                 // Callback ke Function tambah vendor
                 await addVendor(bookingInformation, vendorInformation, res)
 

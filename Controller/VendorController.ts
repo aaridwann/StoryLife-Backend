@@ -3,6 +3,7 @@ import { query, Response } from 'express'
 import { scheduleDb } from "../Models/ScheduleVendorModels"
 import { orderDb } from "../Models/OrderModels"
 import { getVendorAggregate } from '.././Controller/Vendor Function/VendorFunction'
+import { ServicePackage } from "./Vendor/ServicePackage"
 const vendorDb = require('../Models/VendorsModels')
 const userDb = require('../Models/UsersModels')
 const categoryList = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
@@ -116,3 +117,7 @@ export const getVendorSchedule = async (req: { query: Query }, res: Response) =>
     let response = await orderDb.find({ vendorName: { $regex: nameReg }, 'orderList.orderDetail.eventDate': dateSchedule }, { 'orderList.orderDetail.eventDate': 1, vendorName: 1, 'orderList.eventName': 1 })
     res.json(response)
 }
+
+ // Get Follow by id
+ 
+// ServicePackage()
