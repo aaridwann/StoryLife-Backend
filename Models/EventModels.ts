@@ -10,57 +10,48 @@ interface PackageList {
     price: number
     discount: number
 }
-interface VendorList {
-    vendorId: string
-    vendorName: string
-    vendorCategory: string
-    vendorPhone: [{ first: string, second: string }]
-    vendorAddress: { street: string, city: string, province: string, state: string }
-    package: Array<PackageList>
-    total: number,
+export interface VendorList {
+    vendorId?: string
+    vendorName?: string
+    vendorCategory?: string
+    vendorPhone?: [{ first: string, second: string }]
+    vendorAddress?: { street: string, city: string, province: string, state: string }
+    package?: Array<PackageList>
+    total?: number,
 }
-interface EventList {
+export interface EventList {
     eventName: string,
     eventDate: number,
     eventLocation: { street: string, city: string, province: string, state: string }
-    eventCategory: typeof categoryProject
+    eventCategory: string
     vendor: Array<VendorList>
     totalCost: number
 }
 interface EventModelInterface {
     userId: string
-    clientName: string
-    eventList: Array<EventList>
+    event: EventList
 }
 
 const event = new mongoose.Schema<EventModelInterface>({
     userId: { type: String, required: true },
-    clientName: { type: String, required: true },
-    eventList: [{
-        eventName: String,
+    event: {
+        eventName: { type: String, trim: true, lowercase: true },
         eventDate: Number,
         eventLocation: { street: String, city: String, province: String, state: String },
-        eventCategory: { type: String, enum: categoryProject },
+        eventCategory: { type: String, enum: categoryProject, required: true, },
         vendor: [{
-            vendorId: String,
-            vendorName: String,
+            vendorId: { type: String, default: '', lowercase: true, trim: true },
+            vendorName: { type: String, default: '', lowercase: true, trim: true },
             vendorCategory: { type: String, enum: vendorCategory },
-            vendorPhone: [{ first: String, second: String }],
+            vendorPhone: [{ first: {type:String, default:''}, second:{type:String, default:''} }],
             package: [{
                 packageId: String, packageName: String,
                 category: String, price: Number, discount: Number,
                 total: Number,
             }],
-            default: []
         }],
-        totalCost: Number
-        , default: []
-    }]
-    // date: { type: Date, required: true },
-    // location: { type: Object, required: true, default: '' },
-    // category: { type: String, enum: categoryProject, required: true },
-    // vendor: { type: Array, default: null },
-    // totalCost: { type: Number, required: true, default: 0 }
+        totalCost: { type: Number, default: 0, min: 0 },
+    }
 
 })
 

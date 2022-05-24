@@ -4,7 +4,8 @@ const mongo = require('mongoose');
 
 const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
 const bookingStatus = ['rejected', 'pending', 'accepted']
-interface PackageListInterface {
+
+export interface PackageListInterface {
     _id: string
     packageName: string
     description: string

@@ -28,7 +28,7 @@ export const ClientProfile = async (req: { user: { name: string }, query: { id: 
             // Lokkup to project db
             {
                 $lookup: {
-                    from: 'projects',
+                    from: 'events',
                     localField: 'userId',
                     foreignField: 'userId',
                     as: 'Project'

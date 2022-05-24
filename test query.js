@@ -1,5 +1,6 @@
 // REGEX QUERY
 
+const { deepStrictEqual } = require("assert")
 const { ObjectId } = require("bson")
 
 db.vendors.find({ name: { $regex: /rudi/i }, category: { $regex: /makeup/i } })
@@ -64,8 +65,45 @@ db.users.aggregate([
             as: 'Project'
         }
     },
-    {$unwind:'$Project'},
-    {$project:{name:'$name',
-    project:{name:'$Project.name',date:'$Project.date'}}
-}
+    { $unwind: '$Project' },
+    {
+        $project: {
+            name: '$name',
+            project: { name: '$Project.name', date: '$Project.date' }
+        }
+    }
 ])
+videography
+let id = '625acf909f5986c218a0260a'
+
+db.events.updateOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vendorCategory': 'videography' },
+    { $set: { 'eventList.vendor.vendorName': 'taikl' } })
+
+db.events.aggregate([
+    {
+        $project: {
+            event: {
+                $map: {
+                    input: '$eventList',
+                    as: 'v',
+                    in:  {'$$v.vendor.vendorCategory'}
+                }
+            },userId:'$userId'
+        }
+    },
+    { $match: { userId: '625acf909f5986c218a0260a'} },
+
+]).pretty()
+
+db.events.updateOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vendorCategory': 'videography' },
+    { $replace: { 'eventList.vendor.vendorName': 'anjing' } }, {
+    upsert: true,
+    runValidators: true
+})
+
+db.events.findOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vendorCategory': 'videography' }, 
+{ 'vendorName':1})
+
+
+let IdVendor = "62871acb105877ec84f06e69"
+// 62871acb105877ec84f06e69

@@ -1,8 +1,8 @@
 import { Response } from 'express'
-import { CreateBallanceAccount } from './Function/CreateBallanceAccount';
-import { CreateFollowDb } from './Function/CreateFollowDb';
+import { CreateBallanceAccount } from '../Controller/Function/Create Document/CreateBallanceAccount';
+import { CreateFollowDb } from '../Controller/Function/Create Document/CreateFollowDb';
 const bcrypt = require('bcrypt');
-const { userDb } = require('../Models/UsersModels')
+import { userDb } from '../Models/UsersModels'
 const jwt = require('jsonwebtoken')
 
 const privateKey = process.env.PRIVATE_KEY
@@ -44,9 +44,9 @@ export const register = async (req: { body: User }, res: Response) => {
 
                 } else {
                     // Create Follow Document
-                    let createFollowDb = await CreateFollowDb(email, userDb)
+                    let createFollowDb = await CreateFollowDb('id')
                     // Create Ballance account Document
-                    let createBallanceAccount = await CreateBallanceAccount(email, userDb)
+                    let createBallanceAccount = await CreateBallanceAccount(email, 'id')
                     return res.status(201).json({ data: { response, 'follow': createFollowDb, 'balance': createBallanceAccount }, message: 'success' })
                 }
             })
@@ -73,6 +73,7 @@ export const login = async (req: { body: Login }, res: Response) => {
 
         // handler if user not found
         if (!response) {
+            // return console.log({ data: response, message: 'user tidak terdaftar' })
             return res.status(400).send({ data: response, message: 'user tidak terdaftar' })
         }
 
@@ -81,6 +82,7 @@ export const login = async (req: { body: Login }, res: Response) => {
 
         // handler if password not match
         if (!compare) {
+            // return console.log({ data: compare, message: 'Password salah' })
             return res.status(400).send({ data: compare, message: 'Password salah' })
         }
 
@@ -94,13 +96,15 @@ export const login = async (req: { body: Login }, res: Response) => {
         await userDb.updateOne({ email: email }, { $set: { refreshToken: refreshToken } })
 
         // Send cookie
-        res.cookie('refreshToken', refreshToken, { httpOnly: true })
+        res.cookie('refreshToken', refreshToken)
 
         // Send Json
-        return res.json({ token: token, message: 'success' })
+        // return console.log({ token: token, message: 'success' })
+        return res.status(400).json({ token: token, message: 'success' })
 
     } catch (error) {
-        res.send({ message: error })
+        // return console.log(error)
+        return res.status(500).json(error)
     }
 
 }
