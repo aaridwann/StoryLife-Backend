@@ -64,7 +64,7 @@ export const login = async (req: { body: Login }, res: Response) => {
 
     // Verificatiion email and body
     if (!email || !password) {
-        return res.status(400).send({ message: 'Data harap diisi' })
+        return res.status(400).json({ message: 'Data harap diisi' })
     }
 
     try {
@@ -74,7 +74,7 @@ export const login = async (req: { body: Login }, res: Response) => {
         // handler if user not found
         if (!response) {
             // return console.log({ data: response, message: 'user tidak terdaftar' })
-            return res.status(400).send({ data: response, message: 'user tidak terdaftar' })
+            return res.status(400).json({ data: response, message: 'user tidak terdaftar' })
         }
 
         // Compare password
@@ -83,7 +83,7 @@ export const login = async (req: { body: Login }, res: Response) => {
         // handler if password not match
         if (!compare) {
             // return console.log({ data: compare, message: 'Password salah' })
-            return res.status(400).send({ data: compare, message: 'Password salah' })
+            return res.status(400).json({ data: compare, message: 'Password salah' })
         }
 
         // Create Token
@@ -100,7 +100,7 @@ export const login = async (req: { body: Login }, res: Response) => {
 
         // Send Json
         // return console.log({ token: token, message: 'success' })
-        return res.status(400).json({ token: token, message: 'success' })
+        return res.status(200).json({ token: token, message: 'success' })
 
     } catch (error) {
         // return console.log(error)

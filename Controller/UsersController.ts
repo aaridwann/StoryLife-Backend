@@ -8,7 +8,6 @@ export const getallUsers = async (req: any, res: any) => {
     res.status(200).json({ data: response, message: 'Success Loaded' })
 }
 
-
 // Check email Register Real Time
 export const getUserById = async (req: { query: { id: string, name: string, email: string } }, res: Response) => {
     let user = await userDb.findOne(req.query)

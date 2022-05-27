@@ -16,7 +16,7 @@ const vendorAgregate = require('./Routes/Agregate/Vendors')
 
 
 const port = process.env.PORT
-const app = express()
+export const app = express()
 const cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
 const { connect } = require('./Connection Db/ConnectionDb')
@@ -39,6 +39,13 @@ app.use('/api/vendor', vendorAgregate)
 
 // Services
 
+app.post('/', (req: { body: { name: string } }, res: Response) => {
+  if(req.body.name){
+    return res.status(200).json(req.body.name)
+  }else{
+    return res.status(400).json('request body not found')
+  }
+})
 
 
 app.use('/auth', AuthRoute)

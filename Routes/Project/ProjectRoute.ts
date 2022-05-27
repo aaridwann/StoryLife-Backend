@@ -1,3 +1,4 @@
+import { AddEventFunction } from "../../Controller/Function/Add Event/AddEventFunction"
 import { addProject, deleteProject, deleteVendor, editProject, getProjectById } from "../../Controller/ProjectController"
 import ClientMiddleware from "../../MiddleWare/ClientMiddleware"
 
@@ -7,7 +8,7 @@ const router = express.Router()
 // Get Project
 router.get('/', verify, getProjectById)
 // Add Project Route
-router.post('/addproject', verify, ClientMiddleware, addProject)
+router.post('/addproject', verify, ClientMiddleware, AddEventFunction)
 // Edit Project
 router.put('/edit/:id', verify, ClientMiddleware, editProject)
 // Delete Project
