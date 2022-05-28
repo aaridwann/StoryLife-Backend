@@ -22,7 +22,6 @@ export const verify = (req: Request, res: Response, next: any) => {
     if (!req.headers.authorization) {
         return res.status(400).json({ state: false, message: 'Access Forbidden' })
     }
-    // const cookie = jwt.verify(req.cookies.refreshToken, process.env.REFRESH_TOKEN)
     const authHeader = req.headers.authorization
     const token = authHeader && authHeader.split(' ')[1]
     jwt.verify(token, privateKey, (err: any, decode: any) => {

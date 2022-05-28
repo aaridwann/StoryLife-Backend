@@ -32,17 +32,15 @@ type Format = {
 
 export const AddEventFunction = async (req: RequestAddEventFunctionInterface, res: Response) => {
 
-
     // Step 1
     // Validation data
     let data: any = await validationData(req.body)
     if (data?.state == false) {
         return res.status(400).json(data.message)
-    }
-    return res.json({message:"Input ok !",data:data})
+    } 
+
     // Step 2
     // Validation Duplicate Event Function
-
     let validateDuplicateEvent = await ValidationDuplicateEvent(data?.eventName, req.user._id)
     if (validateDuplicateEvent.state === false) {
         return res.status(400).json(validateDuplicateEvent.message)
@@ -50,7 +48,6 @@ export const AddEventFunction = async (req: RequestAddEventFunctionInterface, re
 
     // Step 3
     // Validation user is vendor or not and found
-
     let validatorUser = await validationUser(req.user._id)
     if (validatorUser.state == false) {
         return res.status(400).json(validatorUser.message)
@@ -66,46 +63,48 @@ export const AddEventFunction = async (req: RequestAddEventFunctionInterface, re
         return res.status(400).json(error)
     }
 
-
 }
 
 // 
 // Error di validation data function
 
 async function validationData(req: any): Promise<{ state: boolean, message: any } | Format> {
+
     let format = {
         eventName: 'string',
         eventDate: 'number',
         eventLocation: { street: 'string', city: 'string', province: 'string', state: 'string' },
         eventCategory: 'string',
         vendor: ['vencorCategory', 'vencorCategory', 'vencorCategory'],
-        totalCost: 'number'
     }
 
     if (!req.eventName || !req.eventDate || !req.eventLocation || !req.eventCategory || !req.vendor) {
         return { state: false, message: { error: 'check your input', format: format } }
     }
     // Init category vendor
-    // let category = req.vendor.map((x: any) => {
-    //     return { vendorCategory: x }
-    // })
+    let category = req.vendor.map((x: any) => {
+        return { vendorCategory: x }
+    })
+
+    // Formater date
+    let date = (date: string): number => {
+        let ml = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+        let month = ml.indexOf(date.split(' ')[1])
+        let data = new Date(parseInt(date.split(' ')[2]), month, parseInt(date.split(' ')[0])).getTime()
+        return data
+    }
 
     // Init data from body
     let data: Format = {
-        eventName: req.body.eventName,
-        eventDate: req.body.eventDate,
-        eventLocation: req.body.eventLocation,
-        eventCategory: req.body.eventCategory,
-        vendor:[{vendorCategory:'category'}]
-        // vendor: req.body.map((x: any) => {
-        //     return { vendorCategory: x }
-        // })
-
+        eventName: req.eventName,
+        eventDate: date(req.eventDate),
+        eventLocation: req.eventLocation,
+        eventCategory: req.eventCategory,
+        vendor: category
     }
 
     return data
 }
-
 
 
 async function ValidationDuplicateEvent(eventName: string, userId: string) {
@@ -116,7 +115,6 @@ async function ValidationDuplicateEvent(eventName: string, userId: string) {
         return { state: true }
     }
 }
-
 
 
 async function validationUser(idUser: string): Promise<{ state: boolean, message?: string }> {
@@ -130,7 +128,7 @@ async function validationUser(idUser: string): Promise<{ state: boolean, message
         } else {
             return { state: true }
         }
-    } catch (error:any) {
+    } catch (error: any) {
         return { state: false, message: error.toString() }
     }
 }
