@@ -35,7 +35,7 @@ export const RegisterService = async (req: RequestRegisterInterface, res: any) =
     try {
         new userDb(req.body).save(async (err: any) => {
             if (err) {
-                return err
+                return res.staus(300).json(err)
             }
             else {
                 let createAdditionalDb = await CreateAdditionalDb(req.body.email)
@@ -82,7 +82,7 @@ const CreateAdditionalDb = async (email: string): Promise<boolean | any> => {
     let id = await userDb.findOne({ email: email })
     id = id._id.toString()
     let event = await CreateEventDocument(id, email)
-    let ballance:any = await CreateBallanceAccount(id, email)
+    let ballance: any = await CreateBallanceAccount(id, email)
     let follow = await CreateFollowDb(id)
     if (ballance == false || follow == false || event == false) {
         return false

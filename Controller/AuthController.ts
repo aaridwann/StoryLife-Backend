@@ -18,7 +18,7 @@ interface Login {
 
 
 export const register = async (req: { body: User }, res: Response) => {
-    // Init name emai password from body
+    // Init name email password from body
     const { name, email, password } = req.body
 
     // Verification data
