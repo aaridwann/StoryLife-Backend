@@ -1,6 +1,5 @@
 import { Response } from "express";
-
-const { followDb } = require('../../../Models/FollowModels')
+import { followDb } from '../../../Models/FollowModels'
 
 // Get Follow Function
 interface Query {
