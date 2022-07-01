@@ -1,5 +1,3 @@
-// const vendor = require('../../Models/VendorsModels')
-
 interface Params {
     id: string
     name: string

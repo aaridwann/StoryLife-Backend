@@ -1,5 +1,4 @@
-import { Response } from "express";
-import { userDb } from "../../../Models/UsersModels";
+import { userDb } from "../../Models/UsersModels";
 const { CreateBallanceAccount } = require("../Create Document/CreateBallanceAccount");
 const { CreateEventDocument } = require("../Create Document/CreateEventDocument");
 const { CreateFollowDb } = require("../Create Document/CreateFollowDb");
@@ -12,46 +11,43 @@ interface RequestRegisterInterface {
         password: string
     }
 }
-
 interface Validator {
     state: boolean,
     message: string
 }
-export const RegisterService = async (req: RequestRegisterInterface, res: any) => {
 
 
-    // Validator
-    let validator: Validator | undefined = await validationRequest(req.body)
-    if (validator?.state == false) {
-        return validator
-    }
+// export const RegisterService = async (req: RequestRegisterInterface, res: any) => {
+//     // Validator
+//     let validator: Validator | undefined = await validationRequest(req.body)
+//     if (validator?.state == false) {
+//         return validator
+//     }
+//     // Hasing password
+//     let password = await hashingPassword(req.body.password)
+//     req.body.password = password
+//     req.body.name = req.body.name.trim().toLowerCase()
+//     // input userDb
+//     try {
+//         new userDb(req.body).save(async (err: any) => {
+//             if (err) {
+//                 return res.staus(300).json(err)
+//             }
+//             else {
+//                 let createAdditionalDb = await CreateAdditionalDb(req.body.email)
+//                 if (createAdditionalDb === false) {
+//                     // return { state: false, message: createAdditionalDb.data }
+//                     return res.json({ state: false, message: createAdditionalDb.data })
+//                 }
+//                 return res.json(true)
+//             }
+//         })
 
-    // Hasing password
-    let password = await hashingPassword(req.body.password)
-    req.body.password = password
-    req.body.name = req.body.name.trim().toLowerCase()
+//     } catch (error) {
+//         return res.json(error)
+//     }
 
-    // input userDb
-    try {
-        new userDb(req.body).save(async (err: any) => {
-            if (err) {
-                return res.staus(300).json(err)
-            }
-            else {
-                let createAdditionalDb = await CreateAdditionalDb(req.body.email)
-                if (createAdditionalDb === false) {
-                    // return { state: false, message: createAdditionalDb.data }
-                    return res.json({ state: false, message: createAdditionalDb.data })
-                }
-                return res.json(true)
-            }
-        })
-
-    } catch (error) {
-        return res.json(error)
-    }
-
-}
+// }
 
 const validationRequest = async (req: RequestRegisterInterface['body']): Promise<Validator | undefined> => {
     let { email, password, name } = req

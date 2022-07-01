@@ -7,6 +7,7 @@
   "description": "",
   "main": "app.ts",
   "scripts": {
+    "start": "nodemon app.ts",
     "test": "jest"
   },
   "author": "",

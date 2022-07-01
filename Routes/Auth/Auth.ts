@@ -1,13 +1,14 @@
-import { refreshToken, login, register, logout } from "../../Controller/AuthController"
-import { RegisterService } from "../../Controller/Function/Register/RegisterService";
-import { registerValidator } from "../../Controller/Validator/RegisterValidator";
+import { login } from "../../Controller/Service/Auth/Login";
+import { logout } from "../../Controller/Service/Auth/Logout";
+import { refreshToken } from "../../Controller/Service/Auth/RefreshToken";
+import { RegisterService } from "../../Controller/Service/Auth/RegisterService";
 const express = require('express')
 const router = express.Router()
 
 
 router.post('/refreshToken', refreshToken);
 router.post('/login', login)
-router.post('/register',RegisterService)
+router.post('/register', RegisterService)
 router.delete('/logout', logout)
 
 module.exports = router

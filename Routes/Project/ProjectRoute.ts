@@ -1,5 +1,5 @@
-import { AddEventFunction } from "../../Controller/Function/Add Event/AddEventFunction"
-import { addProject, deleteProject, deleteVendor, editProject, getProjectById } from "../../Controller/ProjectController"
+import { AddEventFunction } from "../../Controller/Service/Add Event/AddEventFunction"
+import { deleteProject, deleteVendor, editProject, getProjectById } from "../../Controller/ProjectController"
 import ClientMiddleware from "../../MiddleWare/ClientMiddleware"
 
 const { verify } = require('../../MiddleWare/TokenMiddleware')

@@ -1,8 +1,8 @@
-import { getFollow } from "../../Controller/Function/Follow/getFollow"
+import { getFollow } from "../../Controller/Service/Follow/getFollow"
 import { DetailPackage } from "../../Controller/Vendor/DetailPackage"
 import { ServicePackage } from "../../Controller/Vendor/ServicePackage"
-import { addVendor, getVendor, getVendorSchedule } from "../../Controller/VendorController"
-import {userToVendor} from '../../Controller/Function/Tobe Vendor/userToVendor'
+import { getVendor, getVendorSchedule } from "../../Controller/VendorController"
+import { userToVendor } from '../../Controller/Service/Tobe Vendor/userToVendor'
 const { verify } = require('../../MiddleWare/TokenMiddleware')
 const route = require('express').Router()
 
