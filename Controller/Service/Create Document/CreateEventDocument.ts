@@ -4,8 +4,9 @@ import { EventModelInterface } from '../../../Models/EventModels'
 export const CreateEventDocument = async (id: string, username: string) => {
     try {
         let res = new eventDb<EventModelInterface>({ userId: id, userName: username, event: [] })
-        await res.save()
-        if (!res) {
+        let exec = await res.save()
+        if (!exec) {
+            console.log(exec)
             return false
         }
         return true

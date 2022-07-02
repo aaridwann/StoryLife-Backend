@@ -41,14 +41,14 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
     // input userDb
     try {
         let create = new userDb(req.body)
-        await create.save()
-        if (!create) {
+        let exec = await create.save()
+        if (!exec) {
             return res.json('gagal')
         } else {
             // Create Additional Db
             let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name)
             // If create additional Failed  cancel all in create
-            if (createAdditional.state == false) {
+            if (!createAdditional.state) {
                 let abort = await abortRegister(createAdditional.user.id)
                 return res.status(400).json({ state: false, message: 'register failed', log: abort.message })
             }
@@ -93,23 +93,27 @@ const CreateAdditionalDb = async (email: string, username: string): Promise<bool
     let id = await userDb.findOne({ email: email })
     id = id._id.toString()
 
-    let event:boolean = await CreateEventDocument(id, username)
+    let event = await CreateEventDocument(id, username)
     let ballance = await CreateBallanceAccount(id, email, username)
     let follow = await CreateFollowDb(id, username)
     let booking = await CreateBookingDocument(id, username)
+
     if (!ballance || !follow || !event || !booking) {
+        console.log({ballance:ballance,follow:follow,event:event,booking:booking})
         return { state: false, user: { _id: id } }
+    } else {
+        return { state: true, message: 'ok' }
     }
-    return { state: true, message: 'ok' }
 }
 
-const abortRegister = async (id: string) => {
+export const abortRegister = async (id: string) => {
     let ballance = await abortBallance(id)
     let user = await abortUser(id)
     let event = await abortEvent(id)
     let follow = await abortFollow(id)
     let booking = await abortBooking(id)
     if (!ballance || !user || !event || !follow || !booking) {
+        console.log({ballance:ballance,follow:follow,event:event,booking:booking})
         return {
             state: false, message: {
                 user: user.message,

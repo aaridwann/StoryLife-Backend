@@ -6,8 +6,8 @@ export const CreateBookingDocument = async (id: string, username: string) => {
 
     try {
         let res = new bookingDb({ userId: id, userName: username })
-        await res.save()
-        if (!res) {
+        let exec = await res.save()
+        if (!exec) {
             return false
         }
         return true

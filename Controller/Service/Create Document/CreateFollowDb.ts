@@ -5,16 +5,13 @@ import { Response } from "express";
 export const CreateFollowDb = async (id: string, username: string) => {
     // Create Follow Document
     try {
-
-        new followDb<FollowModels>({ userId: id, userName: username, following: [], follower: [] }).save((err: any) => {
-            if (err) {
-                return false
-            } else {
-                return true
-
-            }
-        })
-
+        let create = new followDb<FollowModels>({ userId: id, userName: username, following: [], follower: [] })
+        let exec = await create.save()
+        if (!exec) {
+            return false
+        } else {
+            return true
+        }
     } catch (error) {
         return false
     }
