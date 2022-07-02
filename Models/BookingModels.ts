@@ -43,11 +43,13 @@ export interface BookingListInterface {
 
 export interface BookingInterface {
     userId: string
+    userName: string
     bookingList: Array<BookingInterface>
 }
 
 const booking = new mongoose.Schema<BookingInterface>({
     userId: { type: String, required: true, unique: true },
+    userName: { type: String, required: true },
     bookingList: [{
         bookingInformation: {
             eventName: { type: String, required: true },

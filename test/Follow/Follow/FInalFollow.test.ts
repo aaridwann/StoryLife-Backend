@@ -1,9 +1,10 @@
-import { follow } from "../../../Controller/Function/Follow/Follow";
+import { follow } from "../../../Controller/Service/Follow/Follow";
 import { Response } from 'express'
 require('dotenv').config()
 import mongoose from "mongoose"
 const url = process.env.DB_URL
 beforeAll(async () => {
+    if (!url) return false
     await mongoose.connect(url)
 })
 afterAll(async () => {

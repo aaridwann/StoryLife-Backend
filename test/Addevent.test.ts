@@ -1,5 +1,5 @@
 const { AddEventFunction } = require('./AddEventFunction')
-import { EventList } from "../../../Models/EventModels"
+import { EventList } from "../Models/EventModels"
 import mongoose from "mongoose"
 let url = 'mongodb://localhost:27017/StoryLife'
 

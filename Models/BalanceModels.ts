@@ -10,6 +10,7 @@ interface transaction {
 export interface BalanceModels {
     userId: string,
     email: string,
+    userName:string,
     balance: number,
     state: boolean,
     bank: {

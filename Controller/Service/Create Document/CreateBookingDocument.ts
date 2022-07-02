@@ -1,18 +1,20 @@
-import { Response } from "express";
-const { bookingDb } = require('../../../Models/BookingModels')
-
-
+import { bookingDb } from "../../../Models/BookingModels"
 
 // Create Booking document in user first registered
 
-export const CreateBookingDocument = async (id: string, res: Response) => {
+export const CreateBookingDocument = async (id: string, username: string) => {
 
-    await new bookingDb({ userId: id }).save((err: string) => {
-        if (err) {
+    try {
+        let res = new bookingDb({ userId: id, userName: username })
+        await res.save()
+        if (!res) {
             return false
         }
         return true
+    } catch (error) {
+        return false
+    }
 
-    })
+
 
 }

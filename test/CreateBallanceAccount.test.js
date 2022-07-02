@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
-const { users } = require('../../../Models/UsersModels')
-const { CreateBallanceAccount } = require('./CreateBallanceAccount')
+const { users } = require('../Models/UsersModels')
+const { CreateBallanceAccount } = require('../Controller/Service/Create Document/CreateBallanceAccount')
 let url = 'mongodb://localhost:27017/StoryLife'
 
 describe('test Create account balance', () => {

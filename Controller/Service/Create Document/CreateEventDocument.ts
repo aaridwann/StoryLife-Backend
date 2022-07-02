@@ -1,18 +1,14 @@
 import { eventDb } from '../../../Models/EventModels'
+import { EventModelInterface } from '../../../Models/EventModels'
 
-export const CreateEventDocument = async (id: string, email: string) => {
-
+export const CreateEventDocument = async (id: string, username: string) => {
     try {
-        new eventDb({ userId: id, clientEmail: email })
-        .save((err: any) => {
-            if (err) {
-                return false
-            }
-            else {
-                return true
-            }
-        })
-
+        let res = new eventDb<EventModelInterface>({ userId: id, userName: username, event: [] })
+        await res.save()
+        if (!res) {
+            return false
+        }
+        return true
     } catch (error) {
         return false
     }

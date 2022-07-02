@@ -1,12 +1,11 @@
 import { BalanceModels } from "../../../Models/BalanceModels";
 import { balanceDb } from "../../../Models/BalanceModels";
 
-export const CreateBallanceAccount = async (id: string, email: string) => {
-
+export const CreateBallanceAccount = async (id: string, email: string, name: string) => {
     try {
         // Create Balance 
         new balanceDb<BalanceModels>({
-            userId: id, email: email, balance: 0, state: false,
+            userId: id, userName: name, email: email, balance: 0, state: false,
             bank: { name: '', accountNumber: '' },
             transaction: []
         })

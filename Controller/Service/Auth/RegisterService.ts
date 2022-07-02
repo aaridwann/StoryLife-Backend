@@ -1,8 +1,15 @@
 import { Response } from "express";
 import { userDb } from "../../../Models/UsersModels";
-const { CreateBallanceAccount } = require("../Create Document/CreateBallanceAccount");
-const { CreateEventDocument } = require("../Create Document/CreateEventDocument");
-const { CreateFollowDb } = require("../Create Document/CreateFollowDb");
+import { abortBallance } from "../Abort Document/abortBallance";
+import { abortBooking } from "../Abort Document/abortBooking";
+import { abortEvent } from "../Abort Document/abortEvent";
+import { abortFollow } from "../Abort Document/abortFollow";
+import { abortUser } from "../Abort Document/abortUser";
+import { CreateBallanceAccount } from "../Create Document/CreateBallanceAccount";
+import { CreateBookingDocument } from "../Create Document/CreateBookingDocument";
+import { CreateEventDocument } from "../Create Document/CreateEventDocument";
+import { CreateFollowDb } from "../Create Document/CreateFollowDb";
+
 const bcrypt = require('bcrypt');
 
 interface RequestRegisterInterface {
@@ -19,39 +26,44 @@ interface Validator {
 }
 export const RegisterService = async (req: RequestRegisterInterface, res: Response) => {
     // Validator
-    let validator: Validator | undefined = await validationRequest(req.body)
-    if (validator?.state == false) {
-        return validator
+    let validator = await validationRequest(req.body)
+    if (!validator.state) {
+        return res.status(400).json(validator.message)
     }
 
     // Hasing password
     let password = await hashingPassword(req.body.password)
+
+    // Change password with hashing password & Trim name from body
     req.body.password = password
     req.body.name = req.body.name.trim().toLowerCase()
 
     // input userDb
     try {
-        new userDb(req.body).save(async (err: any) => {
-            if (err) {
-                return res.status(300).json(err)
+        let create = new userDb(req.body)
+        await create.save()
+        if (!create) {
+            return res.json('gagal')
+        } else {
+            // Create Additional Db
+            let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name)
+            // If create additional Failed  cancel all in create
+            if (createAdditional.state == false) {
+                let abort = await abortRegister(createAdditional.user.id)
+                return res.status(400).json({ state: false, message: 'register failed', log: abort.message })
             }
             else {
-                let createAdditionalDb = await CreateAdditionalDb(req.body.email)
-                if (createAdditionalDb === false) {
-                    // return { state: false, message: createAdditionalDb.data }
-                    return res.json({ state: false, message: createAdditionalDb.data })
-                }
-                return res.json(true)
+                return res.status(201).json({ state: true, message: 'registered success' })
             }
-        })
+        }
 
     } catch (error) {
-        return res.json(error)
+        return res.status(500).json(error)
     }
 
 }
 
-const validationRequest = async (req: RequestRegisterInterface['body']): Promise<Validator | undefined> => {
+const validationRequest = async (req: RequestRegisterInterface['body']): Promise<Validator> => {
     let { email, password, name } = req
     // init data
     if (!email || !password || !name) {
@@ -63,10 +75,11 @@ const validationRequest = async (req: RequestRegisterInterface['body']): Promise
     }
     // check already email
     let res = await userDb.findOne({ email: email })
-    if (res !== null) {
+    if (res) {
         return { state: false, message: 'email already used' }
+    } else {
+        return { state: true, message: 'ok' }
     }
-    return
 
 }
 
@@ -76,15 +89,38 @@ const hashingPassword = async (password: string): Promise<string> => {
     return hashingPassword
 }
 
-const CreateAdditionalDb = async (email: string): Promise<boolean | any> => {
+const CreateAdditionalDb = async (email: string, username: string): Promise<boolean | any> => {
     let id = await userDb.findOne({ email: email })
     id = id._id.toString()
-    let event = await CreateEventDocument(id, email)
-    let ballance: any = await CreateBallanceAccount(id, email)
-    let follow = await CreateFollowDb(id)
-    if (ballance == false || follow == false || event == false) {
-        return false
-    }
-    return
 
+    let event:boolean = await CreateEventDocument(id, username)
+    let ballance = await CreateBallanceAccount(id, email, username)
+    let follow = await CreateFollowDb(id, username)
+    let booking = await CreateBookingDocument(id, username)
+    if (!ballance || !follow || !event || !booking) {
+        return { state: false, user: { _id: id } }
+    }
+    return { state: true, message: 'ok' }
+}
+
+const abortRegister = async (id: string) => {
+    let ballance = await abortBallance(id)
+    let user = await abortUser(id)
+    let event = await abortEvent(id)
+    let follow = await abortFollow(id)
+    let booking = await abortBooking(id)
+    if (!ballance || !user || !event || !follow || !booking) {
+        return {
+            state: false, message: {
+                user: user.message,
+                ballance: ballance.message,
+                event: event.message,
+                follow: follow.message,
+                booking: booking.message
+            }
+        }
+    }
+    else {
+        return { state: true, message: 'all document success abort' }
+    }
 }
