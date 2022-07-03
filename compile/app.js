@@ -39,7 +39,7 @@ exports.app.listen(port, () => console.log('server is running http://192.168.100
 exports.app.use('/api/vendor', vendorAgregate);
 // Services
 exports.app.get('/', (req, res) => {
-    res.json('hello eko');
+    res.json('hello kontol');
 });
 exports.app.use('/auth', AuthRoute);
 exports.app.use('/users', UsersRoute);
