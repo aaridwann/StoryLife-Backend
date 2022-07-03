@@ -1,0 +1,34 @@
+version: '3.9'
+
+services:
+  app :
+    build : .
+    container_name: backend2
+    ports : 
+    - 8000:8000
+    networks:
+    - SL
+    volumes: 
+    - .:/app
+    environment:
+    - DB_URL=mongodb://mongodb2:27018/StoryLife
+    - PORT=8000
+    depends_on:
+    - mongodb2
+
+  mongodb:
+    image: mongo
+    container_name: mongodb2
+    ports : 
+    - 2018:2017
+    networks :
+    - SL
+    volumes:
+    - /D/StoryLife/db:/data/db
+    environment:
+    - MONGO_INITDB_DATABASE=StoryLife
+
+networks:
+  SL:
+
+    

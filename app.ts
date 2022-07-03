@@ -15,7 +15,7 @@ const vendorAgregate = require('./Routes/Agregate/Vendors')
 
 
 
-const port = process.env.PORT
+const port = process.env.PORT || 8000
 export const app = express()
 const cookieParser = require('cookie-parser')
 var bodyParser = require('body-parser')
@@ -39,12 +39,8 @@ app.use('/api/vendor', vendorAgregate)
 
 // Services
 
-app.post('/', (req: { body: { name: string } }, res: Response) => {
-  if(req.body.name){
-    return res.status(200).json(req.body.name)
-  }else{
-    return res.status(400).json('request body not found')
-  }
+app.get('/',(req:any,res:any) => {
+  res.json('hello eko')
 })
 
 

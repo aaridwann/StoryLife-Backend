@@ -112,11 +112,11 @@ async function BookingWrite(client: any, vendor: any, booking: any, packages: an
     // return vendor.vendorCategory
     try {
         let res = await eventDb.findOne({ userId: client._id, 'eventList.vendor.vendorCategory': vendor.vendorCategory })
-        let response = res.eventList.map((x) => x.vendor.find((x) => x.vendorCategory == vendor.vendorCategory))[0]
+        let response = res.eventList.map((x: { vendor: any }) => x.vendor.find((x: { vendorCategory: string }) => x.vendorCategory == vendor.vendorCategory))[0]
         // return response
         try {
             let query = await eventDb.updateOne({ 'eventList.vendor._id': response },
-             { $set: { 'eventList.vendor..vendorCategory': 'ngehekk' } })
+                { $set: { 'eventList.vendor..vendorCategory': 'ngehekk' } })
             return query
         } catch (error) {
             return error

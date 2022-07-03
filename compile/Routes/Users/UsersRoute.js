@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const UsersController_1 = require("../../Controller/UsersController");
+const { verify } = require('../../MiddleWare/TokenMiddleware');
+const express = require('express');
+const router = express.Router();
+router.get('/', verify, UsersController_1.getallUsers);
+router.get('/checkemail', UsersController_1.getUserById);
+router.get('/profile', verify, UsersController_1.ClientProfile);
+module.exports = router;

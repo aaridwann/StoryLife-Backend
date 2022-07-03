@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { followDb } from '../../../Models/FollowModels'
+import {followDb} from '../../Models/FollowModels'
 
 // Get Follow Function
 interface Query {

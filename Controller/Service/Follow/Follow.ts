@@ -16,10 +16,10 @@ interface Request {
 // 3. jika belum add to follow
 // 4. jika gagal hapus kembali
 // 5. jika berhasil tambah follower ke target
-let failState = (message) => {
+let failState = (message: string) => {
     return { state: false, message: message }
 }
-export const follow = async (req: Request, res?: Response) => {
+export const follow = async (req: Request, res: Response) => {
 
     if (!req.user._id || !req.params.id) {
         // return failState('id user or id params not found')
@@ -58,6 +58,9 @@ export const follow = async (req: Request, res?: Response) => {
 // 1. Check follow Function
 export const checkFollow = async (idUser: string, idTarget: string) => {
     let res = await followDb.findOne({ userId: idUser }, { following: 1, _id: 0 })
+    if (!res) {
+        return { state: false, message: 'data is null' }
+    }
     let check = res.following.map((x) => x._id).includes(idTarget)
     if (check) {
         return { state: false, message: 'you already follow' }
