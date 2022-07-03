@@ -9,7 +9,7 @@
   "scripts": {
     "preinstall": "npm i nodemon -g",
     "start": "nodemon ./compile/app.js",
-    "dev":  "nodemon app.ts",
+    "dev": "nodemon app.ts",
     "build": "tsc -b",
     "watch": "tsc -b --watch",
     "test": "jest"
