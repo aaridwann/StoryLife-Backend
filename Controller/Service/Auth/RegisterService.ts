@@ -43,22 +43,21 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
         let create = new userDb(req.body)
         let exec = await create.save()
         if (!exec) {
-            return res.json('gagal')
-        } else {
-            // Create Additional Db
-            let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name)
-            // If create additional Failed  cancel all in create
-            console.log({ 'info additional': createAdditional.state })
-            if (!createAdditional.state) {
-                console.log({ 'info additional': createAdditional.state })
-                await abortRegister(createAdditional.user.id)
-                return res.status(400).json({ state: false, message: 'register failed' })
-            }
-            else {
-                return res.status(201).json({ state: true, message: 'registered success' })
-            }
+            return res.status(400).json('gagal')
         }
 
+        // Create Additional Db
+        let createDocs = await CreateAdditionalDb(req.body.email, req.body.name)
+        // If create additional Failed  cancel all in create
+        console.log({ 'info additional': createDocs.state })
+        if (createDocs.state === false) {
+            console.log(createDocs.id)
+            const abort = await abortRegister(createDocs.id)
+            return res.status(400).json({ state: false, message: 'Regiter failed', logs: abort.message })
+        }
+        else {
+            return res.status(201).json({ state: true, message: 'registered success' })
+        }
     } catch (error) {
         return res.status(500).json(error)
     }
@@ -101,14 +100,12 @@ const CreateAdditionalDb = async (email: string, username: string): Promise<bool
     let booking = await CreateBookingDocument(id, username)
 
     if (!ballance || !follow || !event || !booking) {
-        console.log({ ballance: ballance, follow: follow, event: event, booking: booking })
-        return { state: false, user: { _id: id } }
-    } else {
-        return { state: true, message: 'ok' }
+        return { state: false, id: id }
     }
+    return { state: true, message: 'ok' }
 }
 
-export async function abortRegister(id: string) {
+export const abortRegister = async (id: string) => {
     let ballance = await abortBallance(id);
     let user = await abortUser(id);
     let event = await abortEvent(id);

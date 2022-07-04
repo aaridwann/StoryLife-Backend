@@ -40,7 +40,7 @@ app.use('/api/vendor', vendorAgregate)
 // Services
 
 app.get('/',(req:any,res:any) => {
-  res.json('hello eko')
+  res.json('please use /api/(url)/')
 })
 
 

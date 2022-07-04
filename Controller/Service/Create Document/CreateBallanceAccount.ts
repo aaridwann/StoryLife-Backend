@@ -9,15 +9,15 @@ export const CreateBallanceAccount = async (id: string, email: string, name: str
             bank: { name: '', accountNumber: '' },
             transaction: []
         })
+        // Save await
         let exec = await create.save()
+        // Condition if save is failed
         if (!exec) {
-            console.log(exec)
             return false
         } else {
-            console.log(exec)
             return true
         }
-        
+
     } catch (error) {
         console.log(error)
         return false
