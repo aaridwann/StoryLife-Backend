@@ -126,6 +126,9 @@ async function CheckUserVendor(id: string): Promise<{ state: boolean, message?: 
 
     try {
         let res = await userDb.findOne({ _id: id }, { vendor: 1 })
+        if (!res) {
+            return { state: false, message: 'not found' }
+        }
         if (res.vendor == true) {
             return { state: false, message: 'you already vendor' }
         } else {
