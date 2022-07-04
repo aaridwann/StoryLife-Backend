@@ -7,7 +7,6 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "preinstall": "npm i nodemon -g",
     "start": "nodemon ./compile/app.js",
     "dev": "nodemon app.ts",
     "build": "tsc -b",
@@ -30,12 +29,13 @@
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-validator": "^6.14.0",
+    "install": "^0.13.0",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^4.5.0",
     "mongodb-memory-server": "^8.5.2",
     "mongoose": "^6.2.10",
     "nodemailer": "^6.7.3",
-    "nodemon": "^2.0.15"
+    "nodemon": "^1.19.4"
   },
   "devDependencies": {
     "@babel/core": "^7.17.12",
@@ -43,8 +43,8 @@
     "@babel/preset-typescript": "^7.17.12",
     "@shelf/jest-mongodb": "^2.2.2",
     "@types/express": "^4.17.13",
-    "@types/jest": "^27.5.1",
-    "@types/node": "^17.0.23",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^17.0.45",
     "@types/supertest": "^2.0.12",
     "babel-jest": "^28.1.0",
     "jest": "^28.1.0",
