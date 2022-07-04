@@ -39,7 +39,7 @@ app.use('/api/vendor', vendorAgregate)
 
 // Services
 
-app.get('/',(req:any,res:any) => {
+app.get('/', (req: any, res: Response) => {
   res.json('please use /api/(url)/')
 })
 

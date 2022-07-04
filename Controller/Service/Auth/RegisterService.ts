@@ -91,7 +91,10 @@ const hashingPassword = async (password: string): Promise<string> => {
 }
 
 const CreateAdditionalDb = async (email: string, username: string): Promise<boolean | any> => {
-    let id = await userDb.findOne({ email: email })
+    let id: any = await userDb.findOne({ email: email })
+    if (!id) {
+        return { state: false, message: 'data not found' }
+    }
     id = id._id.toString()
 
     let event = await CreateEventDocument(id, username)
