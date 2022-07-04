@@ -26,7 +26,7 @@ const balance = new mongoose.Schema<BalanceModels>({
     state: { type: Boolean, default: false },
     bank: {
         name: { type: String, default: '' },
-        accountNumber: { type: String, default: '', unique: true }
+        accountNumber: { type: String, default: '' }
     },
     transaction: [{
         from: { type: String, default: null },

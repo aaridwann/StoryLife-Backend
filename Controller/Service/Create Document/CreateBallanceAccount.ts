@@ -11,12 +11,15 @@ export const CreateBallanceAccount = async (id: string, email: string, name: str
         })
         let exec = await create.save()
         if (!exec) {
+            console.log(exec)
             return false
         } else {
+            console.log(exec)
             return true
         }
-
+        
     } catch (error) {
+        console.log(error)
         return false
     }
 }

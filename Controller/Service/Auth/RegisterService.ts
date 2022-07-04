@@ -48,9 +48,11 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
             // Create Additional Db
             let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name)
             // If create additional Failed  cancel all in create
+            console.log({ 'info additional': createAdditional.state })
             if (!createAdditional.state) {
-                let abort = await abortRegister(createAdditional.user.id)
-                return res.status(400).json({ state: false, message: 'register failed', log: abort.message })
+                console.log({ 'info additional': createAdditional.state })
+                await abortRegister(createAdditional.user.id)
+                return res.status(400).json({ state: false, message: 'register failed' })
             }
             else {
                 return res.status(201).json({ state: true, message: 'registered success' })
@@ -99,21 +101,21 @@ const CreateAdditionalDb = async (email: string, username: string): Promise<bool
     let booking = await CreateBookingDocument(id, username)
 
     if (!ballance || !follow || !event || !booking) {
-        console.log({ballance:ballance,follow:follow,event:event,booking:booking})
+        console.log({ ballance: ballance, follow: follow, event: event, booking: booking })
         return { state: false, user: { _id: id } }
     } else {
         return { state: true, message: 'ok' }
     }
 }
 
-export const abortRegister = async (id: string) => {
-    let ballance = await abortBallance(id)
-    let user = await abortUser(id)
-    let event = await abortEvent(id)
-    let follow = await abortFollow(id)
-    let booking = await abortBooking(id)
+export async function abortRegister(id: string) {
+    let ballance = await abortBallance(id);
+    let user = await abortUser(id);
+    let event = await abortEvent(id);
+    let follow = await abortFollow(id);
+    let booking = await abortBooking(id);
     if (!ballance || !user || !event || !follow || !booking) {
-        console.log({ballance:ballance,follow:follow,event:event,booking:booking})
+        console.log({ ballance: ballance, follow: follow, event: event, booking: booking });
         return {
             state: false, message: {
                 user: user.message,
@@ -122,9 +124,9 @@ export const abortRegister = async (id: string) => {
                 follow: follow.message,
                 booking: booking.message
             }
-        }
+        };
     }
     else {
-        return { state: true, message: 'all document success abort' }
+        return { state: true, message: 'all document success abort' };
     }
 }

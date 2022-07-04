@@ -12,7 +12,7 @@ const balance = new mongoose_1.default.Schema({
     state: { type: Boolean, default: false },
     bank: {
         name: { type: String, default: '' },
-        accountNumber: { type: String, default: '', unique: true }
+        accountNumber: { type: String, default: '' }
     },
     transaction: [{
             from: { type: String, default: null },

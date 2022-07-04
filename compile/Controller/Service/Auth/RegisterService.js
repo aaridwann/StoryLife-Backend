@@ -34,9 +34,11 @@ const RegisterService = async (req, res) => {
             // Create Additional Db
             let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name);
             // If create additional Failed  cancel all in create
+            console.log({ 'info additional': createAdditional.state });
             if (!createAdditional.state) {
-                let abort = await (0, exports.abortRegister)(createAdditional.user.id);
-                return res.status(400).json({ state: false, message: 'register failed', log: abort.message });
+                console.log({ 'info additional': createAdditional.state });
+                await abortRegister(createAdditional.user.id);
+                return res.status(400).json({ state: false, message: 'register failed' });
             }
             else {
                 return res.status(201).json({ state: true, message: 'registered success' });
@@ -87,7 +89,7 @@ const CreateAdditionalDb = async (email, username) => {
         return { state: true, message: 'ok' };
     }
 };
-const abortRegister = async (id) => {
+async function abortRegister(id) {
     let ballance = await (0, abortBallance_1.abortBallance)(id);
     let user = await (0, abortUser_1.abortUser)(id);
     let event = await (0, abortEvent_1.abortEvent)(id);
@@ -108,5 +110,5 @@ const abortRegister = async (id) => {
     else {
         return { state: true, message: 'all document success abort' };
     }
-};
+}
 exports.abortRegister = abortRegister;

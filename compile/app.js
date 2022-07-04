@@ -18,7 +18,7 @@ const OrderRoute = require('./Routes/Order/OrderRoute');
 // 
 // aggregate Route
 const vendorAgregate = require('./Routes/Agregate/Vendors');
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 exports.app = (0, express_1.default)();
 const cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -39,7 +39,7 @@ exports.app.listen(port, () => console.log('server is running http://192.168.100
 exports.app.use('/api/vendor', vendorAgregate);
 // Services
 exports.app.get('/', (req, res) => {
-    res.json('hello kontol');
+    res.json('hello eko');
 });
 exports.app.use('/auth', AuthRoute);
 exports.app.use('/users', UsersRoute);
