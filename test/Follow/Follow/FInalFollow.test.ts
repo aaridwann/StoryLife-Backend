@@ -1,5 +1,4 @@
-import { follow } from "../../../Controller/Service/Follow/Follow";
-import { Response } from 'express'
+import { follow } from '../../../Controller/Service/Follow/Follow'
 require('dotenv').config()
 import mongoose from "mongoose"
 const url = process.env.DB_URL
