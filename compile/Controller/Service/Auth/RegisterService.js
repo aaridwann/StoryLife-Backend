@@ -74,6 +74,9 @@ const hashingPassword = async (password) => {
 };
 const CreateAdditionalDb = async (email, username) => {
     let id = await UsersModels_1.userDb.findOne({ email: email });
+    if (!id) {
+        return { state: false, message: 'data not found' };
+    }
     id = id._id.toString();
     let event = await (0, CreateEventDocument_1.CreateEventDocument)(id, username);
     let ballance = await (0, CreateBallanceAccount_1.CreateBallanceAccount)(id, email, username);

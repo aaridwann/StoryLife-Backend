@@ -35,16 +35,22 @@ const addOrder = async (booking, vendor, client, res) => {
     };
     let orderData = new OrderModels_1.orderDb(data).save(async (err) => {
         if (err) {
-            return pushOrder(data, res);
+            // await pushOrder(data, res);
         }
-        return res.json({ message: 'Order telah dibuat', data: orderData });
+        else {
+            return res.json({ message: 'Order telah dibuat', data: orderData });
+        }
     });
 };
 exports.addOrder = addOrder;
-async function pushOrder(data, res) {
-    let pushData = await OrderModels_1.orderDb.updateOne({ vendorId: data.vendorId, vendorName: data.vendorName }, { $push: { orderList: data.orderList } });
-    res.json({ message: 'Data order berhasil di push', data: pushData });
-}
+// async function pushOrder(data: OrderSchema, res: any) {
+//     if (!data.orderList) {
+//         return res.json(false)
+//     } else {
+//         await orderDb.updateOne({ vendorId: data.vendorId, vendorName: data.vendorName }, { $push: { orderList: data.orderList } })
+//         res.json({ message: 'Data order berhasil di push', data: pushData })
+//     }
+// }
 const cancelOrder = async (req, res) => {
     if (!req.query.orderId) {
         return res.json({ message: "isi tidak ada", format: 'orderId' });

@@ -50,20 +50,19 @@ const transfer = async (req, res) => {
         return res.json({ message: 'data tidak lengkap', data: 'to:,amount,message' });
     }
     // masih bugs pada nilai transfer dan push transaksi
-    try {
-        let update1 = await BalanceModels_1.balanceDb.updateOne({ userId: req.user._id }, {
-            $min: { balance: data.amount },
-            $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
-        });
-        let update2 = await BalanceModels_1.balanceDb.updateOne({ userId: data.to }, {
-            $inc: { balance: data.amount },
-            $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
-        });
-        return res.json({ message: 'berhasil transfer', data: { update1, update2 } });
-    }
-    catch (error) {
-        return res.json(error);
-    }
+    // try {
+    //     let update1 = await balanceDb.updateOne({ userId: req.user._id }, {
+    //         $min: { balance: data.amount },
+    //         $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
+    //     })
+    //     let update2 = await balanceDb.updateOne({ userId: data.to }, {
+    //         $inc: { balance: data.amount },
+    //         $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
+    //     })
+    //     return res.json({ message: 'berhasil transfer', data: { update1, update2 } })
+    // } catch (error) {
+    //     return res.json(error)
+    // }
 };
 exports.transfer = transfer;
 async function middlewareAccount(req, res, next) {

@@ -8,18 +8,19 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const balance = new mongoose_1.default.Schema({
     userId: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    balance: { type: Number, default: 0, min: 0 },
+    balance: { type: Number, min: 0 },
     state: { type: Boolean, default: false },
     bank: {
         name: { type: String, default: '' },
         accountNumber: { type: String, default: '' }
     },
     transaction: [{
-            from: { type: String, default: null },
-            to: { type: String, default: null },
-            amount: { type: Number, default: null },
-            date: { type: Date, default: null },
-            message: { type: String, default: null }
-        } || []]
+            state: { type: String, enum: ['cash in', 'cash out'] },
+            from: { type: String },
+            to: { type: String },
+            amount: { type: Number },
+            date: { type: Number },
+            message: { type: String },
+        }],
 });
 exports.balanceDb = mongoose_1.default.model('balance', balance);

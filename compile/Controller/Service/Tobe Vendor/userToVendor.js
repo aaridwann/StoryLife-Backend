@@ -109,6 +109,9 @@ async function UserVendorState(id) {
 async function CheckUserVendor(id) {
     try {
         let res = await UsersModels_1.userDb.findOne({ _id: id }, { vendor: 1 });
+        if (!res) {
+            return { state: false, message: 'not found' };
+        }
         if (res.vendor == true) {
             return { state: false, message: 'you already vendor' };
         }
