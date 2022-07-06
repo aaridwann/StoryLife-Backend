@@ -86,12 +86,12 @@ db.events.aggregate([
                 $map: {
                     input: '$eventList',
                     as: 'v',
-                    in:  {'$$v.vendor.vendorCategory'}
+                    in: { '$$v.vendor.vendorCategory'}
                 }
-            },userId:'$userId'
+            }, userId: '$userId'
         }
     },
-    { $match: { userId: '625acf909f5986c218a0260a'} },
+    { $match: { userId: '625acf909f5986c218a0260a' } },
 
 ]).pretty()
 
@@ -101,9 +101,56 @@ db.events.updateOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vend
     runValidators: true
 })
 
-db.events.findOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vendorCategory': 'videography' }, 
-{ 'vendorName':1})
+db.events.findOne({ userId: '625acf909f5986c218a0260a', 'eventList.vendor.vendorCategory': 'videography' },
+    { 'vendorName': 1 })
 
 
 let IdVendor = "62871acb105877ec84f06e69"
 // 62871acb105877ec84f06e69
+
+
+// decrease ballance Query
+db.balances.findOneAndUpdate({ userId: '62c4074a179607943f25660c' }, { $set: { balance: -220000 } }, { runValidators: true })
+db.balances.find({ userId: { $in: ['62c4101535d23b7efe6bd864', '62c4074a179607943f25660c'] } }).pretty()
+
+// Bulk Write
+db.balances.bulkWrite([
+    {
+        updateOne:{
+            filter :{
+                userId:'62c4074a179607943f25660D'
+            },
+            update:{
+                $push:{
+                    transaction:{
+                        state: 'credit',
+                        from: 'idUser',
+                        to: 'idTarget',
+                        amount: 8000,
+                        date: Date.now(),
+                        message: 'message'
+                    }
+                }
+            }
+        }
+    },
+    {
+        updateOne:{
+            filter :{
+                userId:'62c4101535d23b7efe6bd864'
+            },
+            update:{
+                $push:{
+                    transaction:{
+                        state: 'debit',
+                        from: 'idUser',
+                        to: 'idTarget',
+                        amount: 1000000,
+                        date: Date.now(),
+                        message: 'message'
+                    }
+                }
+            }
+        }
+    }
+])

@@ -42,17 +42,21 @@ export const addOrder = async (booking: BookingInformation, vendor: Vendor, clie
     }
     let orderData: any = new orderDb(data).save(async (err: any) => {
         if (err) {
-            return pushOrder(data, res);
+            // await pushOrder(data, res);
+        } else {
+            return res.json({ message: 'Order telah dibuat', data: orderData });
         }
-        return res.json({ message: 'Order telah dibuat', data: orderData });
     })
 }
 
-async function pushOrder(data: OrderSchema, res: any): Promise<void> {
-    let pushData = await orderDb.updateOne({ vendorId: data.vendorId, vendorName: data.vendorName },
-        { $push: { orderList: data.orderList } })
-    res.json({ message: 'Data order berhasil di push', data: pushData })
-}
+// async function pushOrder(data: OrderSchema, res: any) {
+//     if (!data.orderList) {
+//         return res.json(false)
+//     } else {
+//         await orderDb.updateOne({ vendorId: data.vendorId, vendorName: data.vendorName }, { $push: { orderList: data.orderList } })
+//         res.json({ message: 'Data order berhasil di push', data: pushData })
+//     }
+// }
 
 export const cancelOrder = async (req: { query: Query }, res: Response) => {
     if (!req.query.orderId) {

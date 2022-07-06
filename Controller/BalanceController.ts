@@ -72,19 +72,19 @@ export const transfer = async (req: { user: User, body: Transfer }, res: Respons
     }
 // masih bugs pada nilai transfer dan push transaksi
 
-    try {
-        let update1 = await balanceDb.updateOne({ userId: req.user._id }, {
-            $min: { balance: data.amount },
-            $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
-        })
-        let update2 = await balanceDb.updateOne({ userId: data.to }, {
-            $inc: { balance: data.amount },
-            $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
-        })
-        return res.json({ message: 'berhasil transfer', data: { update1, update2 } })
-    } catch (error) {
-        return res.json(error)
-    }
+    // try {
+    //     let update1 = await balanceDb.updateOne({ userId: req.user._id }, {
+    //         $min: { balance: data.amount },
+    //         $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
+    //     })
+    //     let update2 = await balanceDb.updateOne({ userId: data.to }, {
+    //         $inc: { balance: data.amount },
+    //         $push: { transaction: { from: req.user._id, to: data.to, amount: data.amount, date: new Date(), message: data.message } }
+    //     })
+    //     return res.json({ message: 'berhasil transfer', data: { update1, update2 } })
+    // } catch (error) {
+    //     return res.json(error)
+    // }
 
 }
 
