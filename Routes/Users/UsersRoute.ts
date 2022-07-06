@@ -1,4 +1,4 @@
-import { ClientProfile, getallUsers, getUserById } from "../../Controller/UsersController"
+import { ClientProfile, getallUsers, getUserById } from "../../Controller/Service/Users/UsersController"
 const { verify } = require('../../MiddleWare/TokenMiddleware')
 const express = require('express')
 const router = express.Router()

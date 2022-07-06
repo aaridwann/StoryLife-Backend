@@ -1,5 +1,5 @@
 const Route = require('express').Router()
-const Paket = require('../../Controller/PackageController')
+const Paket = require('../../Controller/Service/Package/Add Edit Delete Package Class/PackageController')
 import { verify } from '../../MiddleWare/TokenMiddleware'
 import {verifyVendor} from '../../MiddleWare/VendorMiddleware'
 

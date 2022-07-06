@@ -1,4 +1,4 @@
-import { followDb } from "../../../Models/FollowModels"
+import { followDb } from '../../../Models/FollowModels'
 import { Response } from 'express'
 
 interface Request {
@@ -57,11 +57,11 @@ export const follow = async (req: Request, res: Response) => {
 
 // 1. Check follow Function
 export const checkFollow = async (idUser: string, idTarget: string) => {
-    let res = await followDb.findOne({ userId: idUser }, { following: 1, _id: 0 })
-    if (!res) {
-        return { state: false, message: 'data is null' }
+    let res: any | null = await followDb.findOne({ userId: idUser }, { following: 1, _id: 0 })
+    if (res == null) {
+        return { state: false, message: 'you already follow' }
     }
-    let check = res.following.map((x) => x._id).includes(idTarget)
+    let check = res.following.map((x: { _id: string }) => x._id).includes(idTarget)
     if (check) {
         return { state: false, message: 'you already follow' }
     } else {

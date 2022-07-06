@@ -1,9 +1,6 @@
-import axios from "axios"
 import { Response } from "express"
-import { ObjectId } from "mongodb"
 const { eventDb } = require('../../../Models/EventModels')
 import { EventList } from '../../../Models/EventModels'
-import { VendorList } from '../../../Models/EventModels'
 import { userDb } from "../../../Models/UsersModels"
 
 interface RequestAddEventFunctionInterface {
@@ -13,14 +10,7 @@ interface RequestAddEventFunctionInterface {
         token: string
     }
 }
-interface Data {
-    eventName: string
-    eventDate: number
-    eventLocation: { street: string, city: string, province: string, state: string }
-    eventCategory: string
-    vendor: Array<VendorList>
-    totalCost: number
-}
+
 type Format = {
     eventName: string,
     eventDate: number,

@@ -1,8 +1,7 @@
-import middlewareAccount, { createBalance, transfer } from "../../Controller/BalanceController"
-
+import { Transfer } from "../../Controller/Service/Ballance/Transfer"
+import { verify } from "../../MiddleWare/TokenMiddleware"
 const route = require('express').Router()
-const {verify} = require('../../MiddleWare/TokenMiddleware')
-route.post('/create',verify,createBalance)
-route.put('/transfer',verify, middlewareAccount ,transfer)
+
+route.put('/transfer', verify, Transfer)
 
 module.exports = route
