@@ -9,6 +9,7 @@ export interface PackageList {
     discount?: number,
     image?: string
     date?: number
+    sales: number
 
 }
 export interface Package {
@@ -26,7 +27,8 @@ const packageList = new mongoose.Schema<Package>({
         details: { type: String, required: true, min: 25 },
         discount: { type: Number, default: 0 },
         image: { type: String, default: '' },
-        date: { type: Number, default: Date.now() }
+        date: { type: Number, default: Date.now() },
+        sales: { type: Number, default: 0, min: 0 }
     }]
 },
     { timestamps: true })

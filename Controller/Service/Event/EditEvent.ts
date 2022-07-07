@@ -1,12 +1,16 @@
 import { Response } from "express"
+import { ObjectId } from "mongodb"
 const { eventDb, categoryEvent } = require('../../../Models/EventModels')
 import { EventList } from '../../../Models/EventModels'
 
-interface RequestAddEventFunctionInterface {
+interface RequestEditEventFunctionInterface {
     body: EventList
     user: {
         _id: string,
         token: string
+    }
+    params: {
+        id: string
     }
 }
 
@@ -19,9 +23,10 @@ type Format = {
 }
 
 
-export const AddEvent = async (req: RequestAddEventFunctionInterface, res: Response) => {
-   
-
+export const EditEvent = async (req: RequestEditEventFunctionInterface, res: Response) => {
+    if (!req.params.id) {
+        return res.status(400).json({ state: false, messaeg: 'request params not found' })
+    }
     // Step 1
     // Validation data
     let data: any = await validationData(req.body)
@@ -38,11 +43,14 @@ export const AddEvent = async (req: RequestAddEventFunctionInterface, res: Respo
 
     // 3. Insert into Db Events
     try {
-        let insert = await eventDb.updateOne({ userId: req.user._id }, { $push: { event: data.message } })
-        if (!insert) {
-            return res.status(500).json({ state: false, message: 'something error' })
+        let insert = await eventDb.updateOne({ userId: req.user._id, 'event._id': new ObjectId(req.params.id) }, { $set: { 'event.$': data.message } })
+        if (!insert.matchedCount) {
+            return res.status(400).json({ state: false, message: 'event not found' })
         }
-        return res.status(201).json({ state: true, message: 'success create event', data: insert })
+        else if (!insert.modifiedCount) {
+            return res.status(400).json({ state: false, message: 'something error' })
+        }
+        return res.status(201).json({ state: true, message: 'success edit event', data: insert })
     } catch (error) {
         return res.status(400).json({ state: false, message: error })
     }

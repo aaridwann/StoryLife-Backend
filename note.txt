@@ -5,4 +5,4 @@ D:\StoryLife\ngrok\ngrok.yml
 
 docker run --name ngrok -it --network storylife-backend_SL -v D:\StoryLife\ngrok\ngrok.yml:/etc/ngrok.yml -e NGROK_CONFIG=/etc/ngrok.yml ngrok/ngrok:alpine http 80
 
-docker run --name ngrok -it --network storylife-backend_SL -e NGROK_AUTHTOKEN=2BYpdXh72fo4SOyunyjRleGfd16_3cqUw6766QPotGZPpaQ34 ngrok/ngrok:alpine http 8000
+docker run --name ngrok -it --network storylife-backend_SL -e NGROK_AUTHTOKEN=2BYpdXh72fo4SOyunyjRleGfd16_3cqUw6766QPotGZPpaQ34 ngrok/ngrok:alpine http 8000   

@@ -157,3 +157,15 @@ db.balances.bulkWrite([
 db.packages.updateOne({ vendorId: '62c666b539add3eb62097dab', 'package._id': new ObjectId('62c66e7c5ac96c55a866568a') }, { $set: { 'package.$.packageName': 'hulalup' } })
 
 db.packages.updateOne({ vendorId: '62c666b539add3eb62097dab' }, { $pull: { 'package': { _id: new ObjectId('62c6b683abe0d11476335d80') } } })
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c70e1f04a51e28ae4c471c') } } }, { 'event.$': 1, _id: 0 })
+
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c70e1f04a51e28ae4c471c') } } }, { 'event.$': 1, _id: 0 })
+
+
+db.packages.findOneAndUpdate({ package: { $elemMatch: { _id: new ObjectId('62c70d083e720909ac3d55ba') } } }, { $inc: { 'package.$.sales': 1 } }, { _id: 0, createdAt: 0, updatedAt: 0, _id: 0, new: 1 })
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c6ef0ab3684f97d87d6e1f') } }, 'event.vendor.vendorCategory': 'photography' }, { 'event.$': 1, _id: 0 })
+
+db.events.findOne({ event: { _id: new ObjectId('62c6ef0ab3684f97d87d6e1f'), 'vendor.vendorCategory': 'photography' } }, { 'event.$': 1, _id: 0 })

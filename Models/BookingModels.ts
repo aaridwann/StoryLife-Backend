@@ -56,9 +56,9 @@ const booking = new mongoose.Schema<BookingInterface>({
             eventId: { type: String },
             location: { street: String, city: String, province: String, state: String },
             eventDate: { type: Number },
-            bookingDate: { type: Number },
-            bookingStatus: { type: Boolean },
-            paidStatus: { type: Boolean },
+            bookingDate: { type: Number, default:Date.now() },
+            bookingStatus: { type: Boolean,default:false },
+            paidStatus: { type: Boolean ,default:false},
         },
         vendorInformation: {
             vendorId: { type: String },
@@ -77,7 +77,6 @@ const booking = new mongoose.Schema<BookingInterface>({
             clientAddress: String,
             clientPhone: [{ first: String, second: String }]
         }
-        , default: []
     }]
 })
 

@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-export const categoryProject = ['wedding', 'party', 'prewedding', 'birthday', 'engagement', 'religion']
+export const categoryEvent = ['wedding', 'party', 'prewedding', 'birthday', 'engagement', 'religion']
 
 
 let vendorCategory = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
@@ -40,7 +40,7 @@ const event = new mongoose.Schema<EventModelInterface>({
         eventName: { type: String, trim: true, lowercase: true },
         eventDate: Number,
         eventLocation: { street: String, city: String, province: String, state: String },
-        eventCategory: { type: String, enum: categoryProject },
+        eventCategory: { type: String, enum: categoryEvent },
         vendor: [{
             vendorId: { type: String, default: '', lowercase: true, trim: true },
             vendorName: { type: String, default: '', lowercase: true, trim: true },

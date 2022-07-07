@@ -3,7 +3,7 @@ import express, { Response } from 'express'
 // Route
 const AuthRoute = require('./Routes/Auth/Auth')
 const UsersRoute = require('./Routes/Users/UsersRoute')
-const ProjectRoute = require('./Routes/Project/ProjectRoute')
+const EventRoute = require('./Routes/Event/EventRoute')
 const VendorRoute = require('./Routes/Vendor/VendorRoutes')
 const BookingRoute = require('./Routes/Booking/BookingRoutes')
 const PackageRoute = require('./Routes/Package/PackageRoute')
@@ -34,12 +34,13 @@ app.use(bodyParser.json())
 app.use(express.json())
 app.listen(port, () => console.log('server is running http://192.168.100.13:' + port))
 
-// Aggregate
 
+// Aggregate
 app.use('/api/vendor', vendorAgregate)
 
-// Services
 
+
+// Services
 app.get('/', (req: any, res: Response) => {
   res.json('please use /api/(url)/')
 })
@@ -47,7 +48,7 @@ app.get('/', (req: any, res: Response) => {
 
 app.use('/auth', AuthRoute)
 app.use('/users', UsersRoute)
-app.use('/project', ProjectRoute)
+app.use('/event', EventRoute)
 app.use('/vendor', VendorRoute)
 app.use('/booking', BookingRoute)
 app.use('/package', PackageRoute)
