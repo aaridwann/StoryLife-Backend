@@ -48,16 +48,15 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
 
         // Create Additional Db
         let createDocs = await CreateAdditionalDb(req.body.email, req.body.name)
+
         // If create additional Failed  cancel all in create
-        console.log({ 'info additional': createDocs.state })
         if (createDocs.state === false) {
-            console.log(createDocs.id)
             const abort = await abortRegister(createDocs.id)
             return res.status(400).json({ state: false, message: 'Regiter failed', logs: abort.message })
         }
-        else {
-            return res.status(201).json({ state: true, message: 'registered success' })
-        }
+
+        return res.status(201).json({ state: true, message: 'registered success' })
+
     } catch (error) {
         return res.status(500).json(error)
     }

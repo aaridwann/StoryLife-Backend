@@ -27,12 +27,12 @@ let Request = {
 }
 
 describe('user to vendor testing unit', () => {
-    // test('failed has been vendor', async () => {
-    //     expect(await userToVendor(Request)).toEqual({ state: false, message: 'you has been vendor' })
-    // })
-    test('create additional is failed', async () => {
-        expect(await userToVendor(Request)).toEqual({ state: false, message: 'create additional is failed' })
+    test('failed has been vendor', async () => {
+        expect(await userToVendor(Request)).toEqual({ state: false, message: 'you has been vendor' })
     })
+    // test('create additional is failed', async () => {
+    //     expect(await userToVendor(Request)).toEqual({ state: false, message: 'create additional is failed' })
+    // })
     // test('Success created vendor', async () => {
     //     expect(await userToVendor(Request)).toEqual({ state: true, message: 'success created vendor' })
     // })

@@ -116,13 +116,13 @@ db.balances.find({ userId: { $in: ['62c4101535d23b7efe6bd864', '62c4074a17960794
 // Bulk Write
 db.balances.bulkWrite([
     {
-        updateOne:{
-            filter :{
-                userId:'62c4074a179607943f25660D'
+        updateOne: {
+            filter: {
+                userId: '62c4074a179607943f25660D'
             },
-            update:{
-                $push:{
-                    transaction:{
+            update: {
+                $push: {
+                    transaction: {
                         state: 'credit',
                         from: 'idUser',
                         to: 'idTarget',
@@ -135,13 +135,13 @@ db.balances.bulkWrite([
         }
     },
     {
-        updateOne:{
-            filter :{
-                userId:'62c4101535d23b7efe6bd864'
+        updateOne: {
+            filter: {
+                userId: '62c4101535d23b7efe6bd864'
             },
-            update:{
-                $push:{
-                    transaction:{
+            update: {
+                $push: {
+                    transaction: {
                         state: 'debit',
                         from: 'idUser',
                         to: 'idTarget',
@@ -154,3 +154,6 @@ db.balances.bulkWrite([
         }
     }
 ])
+db.packages.updateOne({ vendorId: '62c666b539add3eb62097dab', 'package._id': new ObjectId('62c66e7c5ac96c55a866568a') }, { $set: { 'package.$.packageName': 'hulalup' } })
+
+db.packages.updateOne({ vendorId: '62c666b539add3eb62097dab' }, { $pull: { 'package': { _id: new ObjectId('62c6b683abe0d11476335d80') } } })

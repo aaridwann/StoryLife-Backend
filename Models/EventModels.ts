@@ -36,7 +36,7 @@ export interface EventModelInterface {
 const event = new mongoose.Schema<EventModelInterface>({
     userId: { type: String, required: true },
     userName: { type: String, required: true },
-    event: {
+    event: [{
         eventName: { type: String, trim: true, lowercase: true },
         eventDate: Number,
         eventLocation: { street: String, city: String, province: String, state: String },
@@ -53,8 +53,7 @@ const event = new mongoose.Schema<EventModelInterface>({
             }],
         }],
         totalCost: { type: Number, default: 0, min: 0 },
-        default: []
-    }
+    }]
 
 })
 

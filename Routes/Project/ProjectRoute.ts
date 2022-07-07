@@ -1,4 +1,4 @@
-import { AddEventFunction } from "../../Controller/Service/Add Event/AddEventFunction"
+import { AddEventFunction } from "../../Controller/Service/Event/AddEvent"
 // import { deleteProject, deleteVendor, editProject, getProjectById } from "../../Controller/ProjectController"
 import ClientMiddleware from "../../MiddleWare/ClientMiddleware"
 

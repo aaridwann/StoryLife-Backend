@@ -1,11 +1,12 @@
 import { vendor } from '../../../../Models/VendorsModels'
+import { Response } from 'express'
 interface Params {
     id: string
     name: string
     category: string
 }
-export const GetVendors = async (x: Params, vendor: any) => {
-    let res = await vendor.aggregate([
+export const GetVendors = async (x: Params, res: Response) => {
+    let response = await vendor.aggregate([
         // Lookup Package
         {
             $lookup: {
@@ -49,10 +50,10 @@ export const GetVendors = async (x: Params, vendor: any) => {
         }
     ])
 
-    if (res[0] === undefined) {
+    if (response[0] === undefined) {
         return null
     } else {
         // return console.log(res)
-        return res
+        return response
     }
 }

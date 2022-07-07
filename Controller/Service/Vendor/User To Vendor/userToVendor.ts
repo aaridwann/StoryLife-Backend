@@ -30,29 +30,29 @@ interface Request {
 }
 
 
-export const userToVendor = async (req: Request, res?: Response) => {
+export const userToVendor = async (req: Request, res: Response) => {
     const body: any = req.body
     body.vendorId = req.user._id
     // 1. check user status
     const userCheck = await checkUser(req.user._id)
     if (!userCheck.state) {
-        return userCheck 
+        return res.json(userCheck) 
     }
 
     // 2. insert into Vendor
     const createVendor = await insertVendor(body)
     if (!createVendor.state) {
-        return createVendor 
+        return res.json(createVendor)
     }
 
     // 3. create additional vendor document
     const createAdditional = await CreateAdditionalDocument(req.user._id, req.body.vendorName)
-    if (!createAdditional.state) {
+    if (createAdditional.state == false) {
         await AbortAdditionalDocument(req.user._id)
-        return createAdditional
+        return res.status(400).json(createAdditional)
     }
 
-    return { state: true, message: 'success created vendor' }
+    return res.status(201).json({ state: true, message: 'success created vendor' })
 
 }
 

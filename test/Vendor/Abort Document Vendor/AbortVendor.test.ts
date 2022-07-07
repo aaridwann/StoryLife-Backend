@@ -11,7 +11,7 @@ afterAll(async () => {
 })
 
 describe('Abort additional Document Vendor', () => {
-    test('Success create', async () => {
+    test('Success Abort', async () => {
         expect(await AbortAdditionalDocument('62c515c0fbe6f9f4a9fbe8bc')).toEqual({ state: true, message: 'ok' })
     })
 })

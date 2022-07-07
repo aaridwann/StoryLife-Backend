@@ -9,6 +9,7 @@ const BookingRoute = require('./Routes/Booking/BookingRoutes')
 const PackageRoute = require('./Routes/Package/PackageRoute')
 const BalanceRoute = require('./Routes/Balance/BalanceRoute')
 const OrderRoute = require('./Routes/Order/OrderRoute')
+const FollowRoute = require('./Routes/Follows/FollowRoute')
 // 
 // aggregate Route
 const vendorAgregate = require('./Routes/Agregate/Vendors')
@@ -52,3 +53,4 @@ app.use('/booking', BookingRoute)
 app.use('/package', PackageRoute)
 app.use('/balance', BalanceRoute)
 app.use('/order', OrderRoute)
+app.use('/follow', FollowRoute)

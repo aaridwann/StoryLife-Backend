@@ -16,9 +16,6 @@ interface Request {
 // 3. jika belum add to follow
 // 4. jika gagal hapus kembali
 // 5. jika berhasil tambah follower ke target
-let failState = (message: string) => {
-    return { state: false, message: message }
-}
 export const follow = async (req: Request, res: Response) => {
 
     if (!req.user._id || !req.params.id) {
