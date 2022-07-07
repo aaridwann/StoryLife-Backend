@@ -25,13 +25,13 @@ export const AddEventFunction = async (req: RequestAddEventFunctionInterface, re
     // Step 1
     // Validation data
     let data: any = await validationData(req.body)
-    if (data?.state == false) {
-        return res.status(400).json({ state: false, message: data.message })
+    if (!data.state) {
+        return res.status(400).json(data)
     }
 
     // Step 2
     // Validation Duplicate Event Function
-    let validateDuplicateEvent = await ValidationDuplicateEvent(data?.eventName, req.user._id)
+    let validateDuplicateEvent = await ValidationDuplicateEvent(data.message.eventName, req.user._id)
     if (validateDuplicateEvent.state === false) {
         return res.status(400).json({ state: false, message: validateDuplicateEvent.message })
     }
@@ -46,8 +46,11 @@ export const AddEventFunction = async (req: RequestAddEventFunctionInterface, re
     // Step 4
     // Insert into Db Events
     try {
-        let insert = new eventDb({ userId: req.user, event: data })
-        await insert.save()
+        let insert = new eventDb({ userId: req.user, event: data.message })
+        const save = await insert.save()
+        if (!save) {
+            return res.status(500).json({ state: false, message: 'something error' })
+        }
         return res.status(201).json({ state: true, message: 'success create event' })
     } catch (error) {
         return res.status(400).json({ state: false, message: error })
@@ -55,7 +58,7 @@ export const AddEventFunction = async (req: RequestAddEventFunctionInterface, re
 
 }
 
-// Child Function
+// Child Function //
 
 async function validationData(req: any): Promise<{ state: boolean, message: any } | Format> {
 
@@ -99,7 +102,7 @@ async function validationData(req: any): Promise<{ state: boolean, message: any 
         vendor: category
     }
 
-    return data
+    return { state: true, message: data }
 }
 
 async function ValidationDuplicateEvent(eventName: string, userId: string) {
@@ -126,3 +129,4 @@ async function validationUser(idUser: string): Promise<{ state: boolean, message
         return { state: false, message: error.toString() }
     }
 }
+
