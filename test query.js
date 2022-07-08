@@ -1,6 +1,6 @@
 // REGEX QUERY
 
-const { deepStrictEqual } = require("assert")
+const { deepStrictEqual, match } = require("assert")
 const { ObjectId } = require("bson")
 
 db.vendors.find({ name: { $regex: /rudi/i }, category: { $regex: /makeup/i } })
@@ -166,6 +166,143 @@ db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c70e1f04a51e28ae
 
 db.packages.findOneAndUpdate({ package: { $elemMatch: { _id: new ObjectId('62c70d083e720909ac3d55ba') } } }, { $inc: { 'package.$.sales': 1 } }, { _id: 0, createdAt: 0, updatedAt: 0, _id: 0, new: 1 })
 
-db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c6ef0ab3684f97d87d6e1f') } }, 'event.vendor.vendorCategory': 'photography' }, { 'event.$': 1, _id: 0 })
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c6ef0ab3684f97d87d6e1f'), 'vendor.vendorCategory': 'photography' } } }, { 'event.$': 1 })
 
-db.events.findOne({ event: { _id: new ObjectId('62c6ef0ab3684f97d87d6e1f'), 'vendor.vendorCategory': 'photography' } }, { 'event.$': 1, _id: 0 })
+
+
+
+
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c70e1f04a51e28ae4c471c') } } }, { 'event.vendor.$': 1 })
+
+// event id =  62c70e1f04a51e28ae4c471c
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c70e1f04a51e28ae4c471c') } }, 'event.vendor': { $elemMatch: { _id: new ObjectId('62c6ef0ab3684f97d87d6e20') } } }, { 'event.vendor.$[el]': 1 }, { arrayFilter: [{ 'el.vendorCategory': 'photography' }] })
+
+
+
+db.events.findOne({
+    event: {
+        $elemMatch: {
+            _id: new ObjectId('62c6ef0ab3684f97d87d6e1f'),
+            'vendor.vendorCategory': 'photography'
+        }
+
+    }
+}, {
+    'event.$': 1
+})
+
+
+db.evens.bulkWrite([
+    {
+        updateOne: {
+            filter: {
+                'event._id': new ObjectId('62c70e1f04a51e28ae4c471c'),
+                'event.vendor.vendorCategory': 'photography'
+            }
+        },
+        update: {
+            $set: {
+                'event.vendor.$.vendorName': 'kantal'
+            }
+        }
+    }
+])
+
+db.events.updateOne({ 'event._id': new ObjectId("62c70e1f04a51e28ae4c471c"), 'event.vendor.vendorCategory': 'decoration' }, { $set: { 'event.vendor.$.vendorName': 'kintil' } })
+
+db.events.findOne({ 'event.vendor.vendorCategory': 'decoration' }, { 'event.vendor.$': 1 })
+
+db.events.aggregate([
+    {
+        $match: {
+            'event._id': new ObjectId('62c70e1f04a51e28ae4c471c')
+        }
+    },
+    {
+        $project: {
+            vendor: {
+                $filter: {
+                    input: '$event.vendor',
+                    as: 'ctr',
+                    cond: { '$$ctr.vendorCategory': 'decoration' }
+                }
+            }
+        }
+    }
+
+]).pretty()
+
+
+// PAKE ESSSSSS
+
+db.events.update(
+    {
+        'event._id': new ObjectId('62c70e1f04a51e28ae4c471c')
+    },
+    {
+        $set: {
+            'event.$[outer].vendor.$[inner].vendorName': 'Kontoolll'
+        }
+    },
+    {
+        'arrayFilters': [
+            { 'outer._id': new ObjectId('62c70e1f04a51e28ae4c471c') },
+            { 'inner.vendorCategory': 'decoration' }
+        ]
+    }
+)
+
+db.events.findOneAndUpdate(
+    {
+        'event': {
+            $elemMatch: {
+                '_id': new ObjectId('62c70e1f04a51e28ae4c471c'),
+                'vendor.vendorCategory': 'photography'
+            }
+        }
+
+    },
+    {
+        $set: {
+            'event.$[inner].vendor.$[outer].vendorName': 'Twin photography',
+            'event.$[inner].vendor.$[outer].vendorId': 'VENDOR ID'
+        },
+        $push: {
+            'event.$[inner].vendor.$[outer].package': {
+                packageNAme: 'Cheap WeddingF'
+            }
+
+        },
+        $inc: {
+            'event.$[inner].totalCost': 25000
+        }
+    },
+    {
+        'projection': {
+            'event.$': 1
+        },
+        'arrayFilters': [
+            { 'inner._id': new ObjectId('62c70e1f04a51e28ae4c471c') },
+            { 'outer.vendorCategory': 'photography' }
+        ],
+        new: true,
+    }
+)
+
+db.events.updateOne(
+    {
+        'event._id': new ObjectId('62c70e1f04a51e28ae4c471c')
+    },
+    {
+        $set: {
+            'event.vendor.$[filter].vendorName': 'Silit'
+        }
+    },
+    {
+        'arrayFilters': [
+            { 'filter.vendorCategory': 'photography' }
+        ]
+    }
+)
