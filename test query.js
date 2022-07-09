@@ -266,12 +266,12 @@ db.events.findOneAndUpdate(
     },
     {
         $set: {
-            'event.$[inner].vendor.$[outer].vendorName': 'Twin photography',
+            'event.$[inner].vendor.$[outer].vendorName': 'INDRA ART',
             'event.$[inner].vendor.$[outer].vendorId': 'VENDOR ID'
         },
         $push: {
             'event.$[inner].vendor.$[outer].package': {
-                packageNAme: 'Cheap WeddingF'
+                packageName: 'Cheap WeddingF'
             }
 
         },

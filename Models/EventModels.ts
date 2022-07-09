@@ -45,7 +45,7 @@ const event = new mongoose.Schema<EventModelInterface>({
             vendorId: { type: String, default: '', lowercase: true, trim: true },
             vendorName: { type: String, default: '', lowercase: true, trim: true },
             vendorCategory: { type: String, enum: vendorCategory },
-            vendorPhone: [{ first: { type: String, default: '' }, second: { type: String, default: '' } }],
+            vendorPhone: { phone1: { type: String, default: '' }, phone2: { type: String, default: '' } },
             package: [{
                 packageId: String, packageName: String,
                 category: String, price: Number, discount: Number,

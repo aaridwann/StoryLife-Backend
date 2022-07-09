@@ -6,10 +6,11 @@ const categoryVendor = ['photography', 'videography', 'makeup artist', 'gawn', '
 const bookingStatus = ['rejected', 'pending', 'accepted']
 
 export interface PackageListInterface {
-    _id: string
+    packageId: string
     packageName: string
-    description: string
+    category: string
     price: number
+    details: string
     discount: number
     quantity: number
     total: number
@@ -19,25 +20,26 @@ export interface BookingListInterface {
     bookingInformation: {
         eventName: string
         eventId: string
-        location: { street: string, city: string, province: string, state: string },
-        eventDate: number
-        bookingDate: number
-        bookingStatus: boolean
-        paidStatus: boolean
+        eventLocation: { street: string, city: string, province: string, state: string },
+        eventDate: number,
+        eventCategory: string,
+        bookingDate?: number
+        bookingStatus?: boolean
+        paidStatus?: boolean
     },
     vendorInformation: {
         vendorId: string
         vendorName: string
         vendorAddress: { street: string, city: string, province: string, state: string }
-        vendorPhone: Array<{ first: string, second: string }>
+        vendorPhone: { phone1: string, phone2: string }
         vendorCategory: string
         package: Array<PackageListInterface>
     },
     clientInformation: {
         clientId: string
         clientName: string
-        clientAddress: string
-        clientPhone: Array<{ first: string, second: string }>
+        clientAddress: { street: string, city: string, province: string, state: string }
+        clientPhone: { phone1: string, phone2: string }
     }
 }
 
@@ -54,28 +56,29 @@ const booking = new mongoose.Schema<BookingInterface>({
         bookingInformation: {
             eventName: { type: String, required: true },
             eventId: { type: String },
-            location: { street: String, city: String, province: String, state: String },
+            eventLocation: { street: String, city: String, province: String, state: String },
             eventDate: { type: Number },
-            bookingDate: { type: Number, default:Date.now() },
-            bookingStatus: { type: Boolean,default:false },
-            paidStatus: { type: Boolean ,default:false},
+            eventCategory: String,
+            bookingDate: { type: Number, default: Date.now() },
+            bookingStatus: { type: Boolean, default: false },
+            paidStatus: { type: Boolean, default: false },
         },
         vendorInformation: {
             vendorId: { type: String },
             vendorName: { type: String },
             vendorAddress: { street: String, city: String, province: String, state: String },
-            vendorPhone: [{ first: String, second: String }],
+            vendorPhone: { phone1: String, phone2: String },
             vendorCategory: { type: String },
             package: [{
-                _id: String, packageName: String, description: String,
+                packageId: String, packageName: String, details: String, category: String,
                 price: Number, discount: Number, quantity: Number, total: Number, notes: String
             }],
         },
         clientInformation: {
             clientId: String,
             clientName: String,
-            clientAddress: String,
-            clientPhone: [{ first: String, second: String }]
+            clientAddress: { street: String, city: String, province: String, state: String },
+            clientPhone: { phone1: String, phone2: String }
         }
     }]
 })
