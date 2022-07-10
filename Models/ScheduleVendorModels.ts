@@ -4,7 +4,7 @@ import mongoose from "mongoose";
 export interface ScheduleFormat {
     eventId: String
     eventName: String
-    eventDate: Date
+    eventDate: number
 }
 
 export interface ScheduleVendor {
@@ -19,8 +19,7 @@ const schedule = new mongoose.Schema<ScheduleVendor>({
         {
             eventId: { type: String },
             eventName: { type: String },
-            eventDate: { type: Date }
-            ,default:''
+            eventDate: { type: Number }
         } 
     ]
 })

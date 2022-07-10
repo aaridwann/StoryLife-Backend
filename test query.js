@@ -306,3 +306,7 @@ db.events.updateOne(
         ]
     }
 )
+
+// middleware 
+
+db.events.findOne({ event: { $elemMatch: { _id: new ObjectId('62c97dddd607694b311db0e8'), 'vendor': { $elemMatch: { 'package._id': new ObjectId('62c70d083e720909ac3d55ba') } } } } }, { 'event.vendor.$': 1 })

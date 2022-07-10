@@ -5,6 +5,12 @@ import { packagedb } from '../../../Models/PackageModels'
 import { userDb } from '../../../Models/UsersModels'
 import { vendor } from '../../../Models/VendorsModels'
 import { bookingDb, BookingListInterface } from '../../../Models/BookingModels'
+import { abortOrder, addOrder } from './Add Additional/AddOrder'
+import { addSchedule } from './Add Additional/AddSchedule'
+import { AbortSales } from './Abort Booking/Abort Sales Package'
+import { AbortEvent } from './Abort Booking/AbortEvent'
+import { AbortBooking } from './Abort Booking/AbortBooking'
+import { middlewareAlreadyBooking } from './Middleware/Middleware'
 interface Request {
     user: {
         _id: string
@@ -21,25 +27,38 @@ interface Request {
 
 // OKE ! 1. get data user <findOne>
 // OKE ! 2. get data package and update Sales < findOneAndUpdate >
+//          2.4 update Sales +1 
 // OKE ! 3. get data vendor dari package < findOne >
 // OKE ! 4. get data event dan langsung edit 
 // OKE !    4.1. vendor list dengan vendor dan package < findOneAndUpdate >
 // OKE !    4.2. total cost
 // OKE ! 5. olah data user,event,package,vendor 
 // OKE ! 6. create data BOOKING (PUSH) < updateOne >
-// 7. create additional order & schedule <updateOne>
-// 8. update vendor in eventList
-// 9. jika 6 | 7 | 8 gagal abort 2, 4, 6, 7, 8
-// 10. Create Middleware Booking vendor name in first line
+// OKE ! 7. create additional order & schedule <updateOne>
+// OKE ! 8. jika 4 | 6 | 7 gagal abort 2, 4, 6, 7
+// OKE ! 9. Create Middleware Booking vendor name in first line
 
 
-// PR ADDING TOTAL & NOTES in data proccessing in package
+// OKE ! PR ADDING TOTAL & NOTES in data proccessing in package
 
+// Abort Function
+// OKE ! 1. Abort Sales
+// OKE ! 2. Abort Event 
+// - hapus vendor berdasarkan vendor category
+// - Reset cost => cont - package price
+// OKE ! 3. Abort Booking
 
 
 export const addBooking = async (req: Request, res: Response) => {
     if (!req.query.eventId || !req.query.packageId) {
         return res.status(400).json('query params url not found:: example= http://localhost:8000/booking/?packageId=<YOUR PACKAGE ID>&eventId=<YOUR EVENT ID>')
+    }
+
+
+    // Middleware
+    const checkBooked = await middlewareAlreadyBooking(req.query.eventId, req.query.packageId)
+    if (!checkBooked.state) {
+        return res.json(checkBooked)
     }
 
 
@@ -49,7 +68,7 @@ export const addBooking = async (req: Request, res: Response) => {
 
     // 2. get package
     // Return Array
-    const pckg = await getPackage(req.query.packageId)
+    const pckg = await getPackage(req.query.packageId, req.body.quantity, req.body.notes)
     if (!pckg.state) return res.status(400).json(pckg)
 
     // 3. get vendor
@@ -58,20 +77,64 @@ export const addBooking = async (req: Request, res: Response) => {
 
     // 4. Get and modify event Db 
     const event = await getEvent(req.query.eventId, vendors.message.vendorCategory, vendors.message, pckg.message.package[0])
-    if (!event.state) return res.status(400).json(event)
+    if (!event.state) {
+        const abortPckg = await AbortSales(pckg.message.package[0]._id, req.body.quantity)
+        return res.status(400).json({ message: event, log: [abortPckg.message] })
+    }
 
     // 5. Proccessing Data
-    const data = proccessingData(user.message, pckg.message.package[0], vendors.message, event.message, req.body.notes, req.body.quantity)
+    const data = proccessingData(user.message, pckg.message.package[0], vendors.message, event.message)
     if (!data) return res.status(400).json(data)
+
 
     // 6. Push data booking
     const pushData = await pushDataBooking(data.message)
-    if (!pushData.state) return res.status(400).json(pushData)
 
-    return res.json(pushData)
+    if (!pushData.state) {
+        const abortPckg = await AbortSales(pckg.message.package[0]._id, req.body.quantity)
+        const abortEvnt = await AbortEvent(data.message.bookingInformation.eventId, vendors.message.vendorCategory, pckg.message.package[0])
+        return res.status(400).json({ message: pushData, log: [abortPckg.message, abortEvnt.message] })
+    }
 
+    // 7. Add To Order
+    const order = await addOrder(data.message, pushData.message._id)
+
+    if (!order.state) {
+        const abortPckg = await AbortSales(pckg.message.package[0]._id, req.body.quantity)
+        const abortEvnt = await AbortEvent(data.message.bookingInformation.eventId, vendors.message.vendorCategory, pckg.message.package[0])
+        const abortBooking = await AbortBooking(data.message.clientInformation.clientId, data.message.bookingInformation.eventId)
+        return res.status(400).json({ message: order, log: [abortPckg.message, abortEvnt.message, abortBooking.message] })
+    }
+
+    // 8. Add Schedule
+    const schedule = await addSchedule(vendors.message.vendorId, event.message._id, event.message.eventName, event.message.eventDate)
+
+    if (!schedule.state) {
+        const abortPckg = await AbortSales(pckg.message.package[0]._id, req.body.quantity)
+        const abortEvnt = await AbortEvent(data.message.bookingInformation.eventId, vendors.message.vendorCategory, pckg.message.package[0])
+        const abortBooking = await AbortBooking(data.message.clientInformation.clientId, data.message.bookingInformation.eventId)
+        const abortOrdr = await abortOrder(data.message.vendorInformation.vendorId, data.message.bookingInformation.eventId)
+        return res.status(400).json({ message: schedule, log: [abortPckg.message, abortEvnt.message, abortBooking.message, abortOrdr.message] })
+    }
+
+
+
+    return res.json({ message: 'success', booking: pushData.message, order: order.message, shcedule: schedule.message })
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export const getUser = async (userId: string): Promise<{ state: boolean, message: string | any }> => {
     try {
@@ -83,11 +146,17 @@ export const getUser = async (userId: string): Promise<{ state: boolean, message
     }
 }
 
-export const getPackage = async (packageId: string): Promise<{ state: boolean, message: any }> => {
+export const getPackage = async (packageId: string, quantity: number, notes: string): Promise<{ state: boolean, message: any }> => {
     try {
-        const get = await packagedb.findOneAndUpdate({ package: { $elemMatch: { _id: new ObjectId(packageId) } } }, { $inc: { 'package.$.sales': 1 } }, { new: true })
+        const get = await packagedb.findOneAndUpdate({ package: { $elemMatch: { _id: new ObjectId(packageId) } } }, { $inc: { 'package.$.sales': quantity } }, { new: true }).lean()
         if (!get) return { state: false, message: 'package not found' }
-        return { state: true, message: get }
+        const data = JSON.parse(JSON.stringify(get))
+        data.package[0].total = (quantity * data.package[0].price) - data.package[0].discount
+        data.package[0].notes = notes
+        data.package[0].quantity = quantity
+        delete data.package[0].sales
+        delete data.package[0].image
+        return { state: true, message: data }
     } catch (error: any) {
         return { state: false, message: error.toString() }
     }
@@ -140,18 +209,15 @@ export const getEvent = async (eventId: string, categoryVendor: string, dataVend
                     { 'inner._id': new ObjectId(eventId) },
                     { 'outer.vendorCategory': categoryVendor }
                 ],
-            })
+            }).lean()
         if (!get) return { state: false, message: 'vendor category not found please add category in event before' }
-
         return { state: true, message: get.event[0] }
     } catch (error: any) {
         return { state: false, message: error.toString() }
     }
 }
 
-export const proccessingData = (user: any, pckg: any, vendor: any, event: any, notes: string, qty: number) => {
-    pckg['total'] = pckg.price * qty
-    pckg['notes'] = notes
+export const proccessingData = (user: any, pckg: any, vendor: any, event: any) => {
 
     // 1. init data Booking Information
     const bookingInformation: BookingListInterface['bookingInformation'] = {
