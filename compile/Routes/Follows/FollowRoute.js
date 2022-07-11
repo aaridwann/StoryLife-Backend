@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const TokenMiddleware_1 = require("../../MiddleWare/TokenMiddleware");
+const getFollow_1 = require("../../Controller/Service/Follow/getFollow");
+const Follow_1 = require("../../Controller/Service/Follow/Follow");
+const Unfollow_1 = require("../../Controller/Service/Follow/Unfollow");
+const route = require('express').Router();
+route.get('/', TokenMiddleware_1.verify, getFollow_1.getFollow);
+route.post('/', TokenMiddleware_1.verify, Follow_1.follow);
+route.delete('/', TokenMiddleware_1.verify, Unfollow_1.unfollow);
+module.exports = route;

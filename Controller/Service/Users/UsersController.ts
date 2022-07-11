@@ -1,45 +1,69 @@
 import { Response } from "express"
+import { ObjectId } from "mongodb"
 import { userDb } from '../../../Models/UsersModels'
 
-
-export const getallUsers = async (req: any, res: any) => {
-    const response = await userDb.find({}, { name: 1, _id: 1, email: 1 })
-    res.status(200).json({ data: response, message: 'Success Loaded' })
-}
-
-// Check email Register Real Time
-export const getUserById = async (req: { query: { id: string, name: string, email: string } }, res: Response) => {
-    let user = await userDb.findOne(req.query)
-    if (user) {
-        return res.json(false)
+interface Request {
+    query: {
+        id: string,
+        name: string,
+        vendor: any
     }
-    res.json(true)
 }
 
-// Controller for client Profile
-export const ClientProfile = async (req: { user: { name: string }, query: { id: string } }, res: Response) => {
+export const getUser = async (req: Request, res: Response) => {
+
+    if (!req.query.vendor || req.query.vendor == 'false') {
+        req.query.vendor = false
+    } else {
+        req.query.vendor = true
+    }
+
 
     try {
-        let response = await userDb.aggregate([
-            // Add Fields
-            { '$addFields': { 'userId': { '$toString': '$_id' } } },
-            // Lokkup to project db
+        const get = await userDb.aggregate([
+            {
+                $addFields: {
+                    'userId': { $toString: '$_id' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'follows',
+                    localField: 'userId',
+                    foreignField: 'userId',
+                    as: 'follow'
+                }
+            },
             {
                 $lookup: {
                     from: 'events',
                     localField: 'userId',
                     foreignField: 'userId',
-                    as: 'Project'
+                    as: 'event'
                 }
             },
-            // Match
-            { '$match': { userId: req.query.id } },
-            // Project
-            { '$project': { password: 0, refreshToken: 0, createdAt: 0, updatedAt: 0, _id: 0, __v: 0 } }
+            {
+                $match: {
+                    $or: [
+                        { _id: new ObjectId(req.query.id) }, { name: req.query.name }, { vendor: req.query.vendor }
+                    ]
+                }
+            },
+            {
+                $project: {
+                    _id: '$_id',
+                    name: '$name',
+                    address: '$address',
+                    vendor: '$vendor',
+                    follow: { following: '$follow.following', follower: '$follow.follower' },
+                    event: '$event.event'
+                }
+            },
+            { $unwind: { path: '$follow', preserveNullAndEmptyArrays: true } },
+            { $unwind: { path: '$event', preserveNullAndEmptyArrays: true } },
         ])
-        res.status(200).json(response)
-    } catch (error) {
-        res.status(400).json(error)
+        return !get ? res.status(400).json('user not found') : res.status(200).json(get)
+    } catch (error: any) {
+        return res.status(500).json(error)
     }
-
 }

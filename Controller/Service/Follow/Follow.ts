@@ -5,7 +5,7 @@ interface Request {
     user: {
         _id: string
     }
-    params: {
+    query: {
         id: string
     }
 }
@@ -18,30 +18,28 @@ interface Request {
 // 5. jika berhasil tambah follower ke target
 export const follow = async (req: Request, res: Response) => {
 
-    if (!req.user._id || !req.params.id) {
-        // return failState('id user or id params not found')
-        return res.status(400).json({ state: false, message: 'id user or id params not found' })
-    }
+    if (!req.user._id || !req.query.id) return res.status(400).json({ state: false, message: 'id user or id params not found' })
+    if (req.user._id == req.query.id) return res.status(400).json({ state: false, message: 'id target params cannot same with id user' })
 
     // 1. Check following
-    let check = await checkFollow(req.user._id, req.params.id)
+    let check = await checkFollow(req.user._id, req.query.id)
     if (!check.state) {
         return res.status(400).json(check.message)
         // return failState(check.message)
     }
 
     // 2. Add to Following
-    let addFollow = await addToFollow(req.user._id, req.params.id)
+    let addFollow = await addToFollow(req.user._id, req.query.id)
     if (!addFollow.state) {
         return res.status(500).json(addFollow.message)
         // return failState(addFollow.message)
     }
 
     // 3. Add to Follower
-    let addFollower = await addToFollower(req.user._id, req.params.id)
+    let addFollower = await addToFollower(req.user._id, req.query.id)
     if (!addFollower.state) {
         // if Add to follower is failed do Cancel Following 
-        await cancelFollowing(req.user._id, req.params.id)
+        await cancelFollowing(req.user._id, req.query.id)
         return res.status(500).json(addFollower.message)
         // return failState(addFollower.message)
     }
