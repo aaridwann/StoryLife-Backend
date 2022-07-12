@@ -1,5 +1,7 @@
 require('dotenv').config()
 import express, { Response } from 'express'
+import { downloadFile } from './Controller/Service/upload/accessData'
+import { uploadBasic, upload } from './Controller/Service/upload/upload'
 // Route
 const AuthRoute = require('./Routes/Auth/Auth')
 const UsersRoute = require('./Routes/Users/UsersRoute')
@@ -41,9 +43,8 @@ app.use('/api/vendor', vendorAgregate)
 
 
 // Services
-app.get('/', (req: any, res: Response) => {
-  res.json('please use /api/(url)/')
-})
+app.post('/', upload, uploadBasic)
+app.get('/', downloadFile)
 
 
 app.use('/auth', AuthRoute)
