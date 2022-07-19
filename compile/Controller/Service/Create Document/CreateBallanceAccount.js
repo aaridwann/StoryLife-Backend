@@ -10,7 +10,9 @@ const CreateBallanceAccount = async (id, email, name) => {
             bank: { name: '', accountNumber: '' },
             transaction: []
         });
+        // Save await
         let exec = await create.save();
+        // Condition if save is failed
         if (!exec) {
             return false;
         }
@@ -19,6 +21,7 @@ const CreateBallanceAccount = async (id, email, name) => {
         }
     }
     catch (error) {
+        console.log(error);
         return false;
     }
 };

@@ -7,7 +7,6 @@ const CreateEventDocument = async (id, username) => {
         let res = new EventModels_1.eventDb({ userId: id, userName: username, event: [] });
         let exec = await res.save();
         if (!exec) {
-            console.log(exec);
             return false;
         }
         return true;

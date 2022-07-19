@@ -14,6 +14,6 @@ afterAll(async () => {
 
 describe('abort testing unit',() => {
     test('Abort test',async () => {
-        expect(await abortRegister('62c044a647cf75d89bafcd06')).toEqual({ state: true, message: 'all document success abort'})
+        expect(await abortRegister('62c2dd7261b6a8c1d030540e')).toEqual({ state: true, message: 'all document success abort'})
     })
 })

@@ -1,10 +1,8 @@
-import { ClientProfile, getallUsers, getUserById } from "../../Controller/UsersController"
+import { getUser } from "../../Controller/Service/Users/UsersController"
 const { verify } = require('../../MiddleWare/TokenMiddleware')
 const express = require('express')
 const router = express.Router()
 
-router.get('/', verify, getallUsers)
-router.get('/checkemail', getUserById)
-router.get('/profile', verify, ClientProfile)
+router.get('/', verify, getUser)
 
 module.exports = router

@@ -3,12 +3,13 @@ import express, { Response } from 'express'
 // Route
 const AuthRoute = require('./Routes/Auth/Auth')
 const UsersRoute = require('./Routes/Users/UsersRoute')
-const ProjectRoute = require('./Routes/Project/ProjectRoute')
+const EventRoute = require('./Routes/Event/EventRoute')
 const VendorRoute = require('./Routes/Vendor/VendorRoutes')
 const BookingRoute = require('./Routes/Booking/BookingRoutes')
 const PackageRoute = require('./Routes/Package/PackageRoute')
 const BalanceRoute = require('./Routes/Balance/BalanceRoute')
 const OrderRoute = require('./Routes/Order/OrderRoute')
+const FollowRoute = require('./Routes/Follows/FollowRoute')
 // 
 // aggregate Route
 const vendorAgregate = require('./Routes/Agregate/Vendors')
@@ -33,22 +34,24 @@ app.use(bodyParser.json())
 app.use(express.json())
 app.listen(port, () => console.log('server is running http://192.168.100.13:' + port))
 
-// Aggregate
 
+// Aggregate
 app.use('/api/vendor', vendorAgregate)
 
-// Services
 
-app.get('/',(req:any,res:any) => {
-  res.json('hello eko')
+
+// Services
+app.get('/', (req: any, res: Response) => {
+  res.json('please use /api/(url)/')
 })
 
 
 app.use('/auth', AuthRoute)
 app.use('/users', UsersRoute)
-app.use('/project', ProjectRoute)
+app.use('/event', EventRoute)
 app.use('/vendor', VendorRoute)
 app.use('/booking', BookingRoute)
 app.use('/package', PackageRoute)
 app.use('/balance', BalanceRoute)
 app.use('/order', OrderRoute)
+app.use('/follow', FollowRoute)

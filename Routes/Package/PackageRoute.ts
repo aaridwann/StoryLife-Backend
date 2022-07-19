@@ -1,19 +1,13 @@
-const Route = require('express').Router()
-const Paket = require('../../Controller/PackageController')
+import { addPackage } from '../../Controller/Service/Package/AddPackage'
+import { deletePackage } from '../../Controller/Service/Package/DeletePackage'
+import { editPackage } from '../../Controller/Service/Package/EditPackage'
 import { verify } from '../../MiddleWare/TokenMiddleware'
-import {verifyVendor} from '../../MiddleWare/VendorMiddleware'
+import { verifyVendor } from '../../MiddleWare/VendorMiddleware'
+const Route = require('express').Router()
 
-Route.post('/add', verify, verifyVendor,(req: any, res: any) => {
-    const paket = new Paket(req, res)
-    paket.addPackage(res)
-})
-Route.delete('/:id',verify,verifyVendor,(req:any,res:any) => {
-    const paket = new Paket(req, res)
-    paket.deletePackage(req,res)
-})
-Route.put('/:id',verify,verifyVendor,(req:any,res:any) => {
-    const paket = new Paket(req,res)
-    paket.editPackage(req,res)
-})
+
+Route.post('/add', verify, verifyVendor, addPackage)
+Route.put('/:id', verify, verifyVendor, editPackage)
+Route.delete('/:id', verify, verifyVendor, deletePackage)
 
 module.exports = Route

@@ -28,20 +28,16 @@ const RegisterService = async (req, res) => {
         let create = new UsersModels_1.userDb(req.body);
         let exec = await create.save();
         if (!exec) {
-            return res.json('gagal');
+            return res.status(400).json('gagal');
         }
-        else {
-            // Create Additional Db
-            let createAdditional = await CreateAdditionalDb(req.body.email, req.body.name);
-            // If create additional Failed  cancel all in create
-            if (!createAdditional.state) {
-                let abort = await (0, exports.abortRegister)(createAdditional.user.id);
-                return res.status(400).json({ state: false, message: 'register failed', log: abort.message });
-            }
-            else {
-                return res.status(201).json({ state: true, message: 'registered success' });
-            }
+        // Create Additional Db
+        let createDocs = await CreateAdditionalDb(req.body.email, req.body.name);
+        // If create additional Failed  cancel all in create
+        if (createDocs.state === false) {
+            const abort = await (0, exports.abortRegister)(createDocs.id);
+            return res.status(400).json({ state: false, message: 'Regiter failed', logs: abort.message });
         }
+        return res.status(201).json({ state: true, message: 'registered success' });
     }
     catch (error) {
         return res.status(500).json(error);
@@ -74,18 +70,18 @@ const hashingPassword = async (password) => {
 };
 const CreateAdditionalDb = async (email, username) => {
     let id = await UsersModels_1.userDb.findOne({ email: email });
+    if (!id) {
+        return { state: false, message: 'data not found' };
+    }
     id = id._id.toString();
     let event = await (0, CreateEventDocument_1.CreateEventDocument)(id, username);
     let ballance = await (0, CreateBallanceAccount_1.CreateBallanceAccount)(id, email, username);
     let follow = await (0, CreateFollowDb_1.CreateFollowDb)(id, username);
     let booking = await (0, CreateBookingDocument_1.CreateBookingDocument)(id, username);
     if (!ballance || !follow || !event || !booking) {
-        console.log({ ballance: ballance, follow: follow, event: event, booking: booking });
-        return { state: false, user: { _id: id } };
+        return { state: false, id: id };
     }
-    else {
-        return { state: true, message: 'ok' };
-    }
+    return { state: true, message: 'ok' };
 };
 const abortRegister = async (id) => {
     let ballance = await (0, abortBallance_1.abortBallance)(id);

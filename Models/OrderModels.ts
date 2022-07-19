@@ -7,24 +7,26 @@ interface Package {
     discount: number
     quantity: number
     total: number
+    category: string
+    packageId: string
 }
 
-interface OrderList {
-    orderId: String,
-    eventName: String,
-    clientName: String
+export interface OrderList {
+    bookingId: string,
+    eventName: string,
+    clientName: string
     orderDetail: {
-        eventName: String
-        eventId: String
-        location: Object
-        bookingDate: Date
-        eventDate: Date
-        package: Array<object>,
-        notes: String
-        clientId: String
-        clientName: String
-        clientAddress: String
-        clientPhone: String
+        eventName: string
+        eventId: string
+        eventLocation: { street: string, city: string, province: string, state: string }
+        bookingDate: number
+        eventDate: number
+        package: [Package]
+        notes: string
+        clientId: string
+        clientName: string
+        clientAddress: { street: string, city: string, province: string, state: string }
+        clientPhone: string
     }
     status: {
         bookingStatus: 'pending' | 'accepted' | 'rejected',
@@ -43,32 +45,34 @@ const order = new mongoose.Schema<OrderSchema>({
     vendorId: { type: String, required: true, unique: true },
     vendorName: { type: String, required: true, unique: true },
     orderList: [{
-        orderId: { type: String, required: true },
+        bookingId: String,
         eventName: { type: String, required: true },
         clientName: { type: String, required: true },
         orderDetail: {
             eventName: { type: String, required: true },
             eventId: { type: String, required: true },
-            location: { type: Object, required: true },
-            bookingDate: { type: Date, required: true },
-            eventDate: { type: Date, required: true },
+            eventLocation: { street: String, city: String, province: String, state: String },
+            bookingDate: { type: Number, required: true },
+            eventDate: { type: Number, required: true },
             package: [{
-                name: { type: String, required: true },
+                packageName: { type: String, required: true },
                 details: { type: String, required: true },
+                category: String,
+                packageId: String,
                 price: { type: Number, required: true },
                 discount: { type: Number, required: true },
                 quantity: { type: Number, required: true },
                 total: { type: Number, required: true },
             }],
-            notes: { type: String, default:'' },
+            notes: { type: String, default: '' },
             clientId: { type: String, required: true },
             clientName: { type: String, required: true },
-            clientAddress: { type: String, required: true },
+            clientAddress: { street: String, city: String, province: String, state: String },
             clientPhone: { type: String, required: true },
         },
         status: {
-            bookingStatus: { type: String, enum: ['pending', 'accepted', 'rejected'], required: true },
-            paidStatus: { type: Boolean, required: true }
+            bookingStatus: { type: String, enum: ['pending', 'accepted', 'rejected'], default: 'pending' },
+            paidStatus: { type: Boolean, default: false }
         }
     }]
 })

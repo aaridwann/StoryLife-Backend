@@ -15,30 +15,30 @@ const booking = new mongoose_1.default.Schema({
             bookingInformation: {
                 eventName: { type: String, required: true },
                 eventId: { type: String },
-                location: { street: String, city: String, province: String, state: String },
+                eventLocation: { street: String, city: String, province: String, state: String },
                 eventDate: { type: Number },
-                bookingDate: { type: Number },
-                bookingStatus: { type: Boolean },
-                paidStatus: { type: Boolean },
+                eventCategory: String,
+                bookingDate: { type: Number, default: Date.now() },
+                bookingStatus: { type: Boolean, default: false },
+                paidStatus: { type: Boolean, default: false },
             },
             vendorInformation: {
                 vendorId: { type: String },
                 vendorName: { type: String },
                 vendorAddress: { street: String, city: String, province: String, state: String },
-                vendorPhone: [{ first: String, second: String }],
+                vendorPhone: { phone1: String, phone2: String },
                 vendorCategory: { type: String },
                 package: [{
-                        _id: String, packageName: String, description: String,
+                        packageId: String, packageName: String, details: String, category: String,
                         price: Number, discount: Number, quantity: Number, total: Number, notes: String
                     }],
             },
             clientInformation: {
                 clientId: String,
                 clientName: String,
-                clientAddress: String,
-                clientPhone: [{ first: String, second: String }]
-            },
-            default: []
+                clientAddress: { street: String, city: String, province: String, state: String },
+                clientPhone: { phone1: String, phone2: String }
+            }
         }]
 });
 exports.bookingDb = mongoose_1.default.model('booking', booking);

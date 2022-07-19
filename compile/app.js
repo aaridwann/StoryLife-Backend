@@ -9,16 +9,17 @@ const express_1 = __importDefault(require("express"));
 // Route
 const AuthRoute = require('./Routes/Auth/Auth');
 const UsersRoute = require('./Routes/Users/UsersRoute');
-const ProjectRoute = require('./Routes/Project/ProjectRoute');
+const EventRoute = require('./Routes/Event/EventRoute');
 const VendorRoute = require('./Routes/Vendor/VendorRoutes');
 const BookingRoute = require('./Routes/Booking/BookingRoutes');
 const PackageRoute = require('./Routes/Package/PackageRoute');
 const BalanceRoute = require('./Routes/Balance/BalanceRoute');
 const OrderRoute = require('./Routes/Order/OrderRoute');
+const FollowRoute = require('./Routes/Follows/FollowRoute');
 // 
 // aggregate Route
 const vendorAgregate = require('./Routes/Agregate/Vendors');
-const port = process.env.PORT;
+const port = process.env.PORT || 8000;
 exports.app = (0, express_1.default)();
 const cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
@@ -39,13 +40,14 @@ exports.app.listen(port, () => console.log('server is running http://192.168.100
 exports.app.use('/api/vendor', vendorAgregate);
 // Services
 exports.app.get('/', (req, res) => {
-    res.json('hello eko');
+    res.json('please use /api/(url)/');
 });
 exports.app.use('/auth', AuthRoute);
 exports.app.use('/users', UsersRoute);
-exports.app.use('/project', ProjectRoute);
+exports.app.use('/event', EventRoute);
 exports.app.use('/vendor', VendorRoute);
 exports.app.use('/booking', BookingRoute);
 exports.app.use('/package', PackageRoute);
 exports.app.use('/balance', BalanceRoute);
 exports.app.use('/order', OrderRoute);
+exports.app.use('/follow', FollowRoute);

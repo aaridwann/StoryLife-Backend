@@ -12,10 +12,12 @@ const packageList = new mongoose_1.default.Schema({
     package: [{
             packageName: { type: String, required: true },
             category: { type: String, enum: exports.CategoryPackage, required: true },
-            price: { type: Number, required: true, min: 6 },
+            price: { type: Number, required: true, min: 50000 },
             details: { type: String, required: true, min: 25 },
             discount: { type: Number, default: 0 },
-            image: { type: String, default: '' }
+            image: { type: String, default: '' },
+            date: { type: Number, default: Date.now() },
+            sales: { type: Number, default: 0, min: 0 }
         }]
 }, { timestamps: true });
-exports.packagedb = mongoose_1.default.model('packageList', packageList);
+exports.packagedb = mongoose_1.default.model('package', packageList);

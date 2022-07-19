@@ -1,19 +1,12 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const Route = require('express').Router();
-const Paket = require('../../Controller/PackageController');
+const AddPackage_1 = require("../../Controller/Service/Package/AddPackage");
+const DeletePackage_1 = require("../../Controller/Service/Package/DeletePackage");
+const EditPackage_1 = require("../../Controller/Service/Package/EditPackage");
 const TokenMiddleware_1 = require("../../MiddleWare/TokenMiddleware");
 const VendorMiddleware_1 = require("../../MiddleWare/VendorMiddleware");
-Route.post('/add', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, (req, res) => {
-    const paket = new Paket(req, res);
-    paket.addPackage(res);
-});
-Route.delete('/:id', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, (req, res) => {
-    const paket = new Paket(req, res);
-    paket.deletePackage(req, res);
-});
-Route.put('/:id', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, (req, res) => {
-    const paket = new Paket(req, res);
-    paket.editPackage(req, res);
-});
+const Route = require('express').Router();
+Route.post('/add', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, AddPackage_1.addPackage);
+Route.put('/:id', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, EditPackage_1.editPackage);
+Route.delete('/:id', TokenMiddleware_1.verify, VendorMiddleware_1.verifyVendor, DeletePackage_1.deletePackage);
 module.exports = Route;

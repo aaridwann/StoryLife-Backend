@@ -7,9 +7,6 @@ const FollowModels_1 = require("../../../Models/FollowModels");
 // 3. jika belum add to follow
 // 4. jika gagal hapus kembali
 // 5. jika berhasil tambah follower ke target
-let failState = (message) => {
-    return { state: false, message: message };
-};
 const follow = async (req, res) => {
     if (!req.user._id || !req.params.id) {
         // return failState('id user or id params not found')
@@ -42,8 +39,8 @@ exports.follow = follow;
 // 1. Check follow Function
 const checkFollow = async (idUser, idTarget) => {
     let res = await FollowModels_1.followDb.findOne({ userId: idUser }, { following: 1, _id: 0 });
-    if (!res) {
-        return { state: false, message: 'data is null' };
+    if (res == null) {
+        return { state: false, message: 'you already follow' };
     }
     let check = res.following.map((x) => x._id).includes(idTarget);
     if (check) {

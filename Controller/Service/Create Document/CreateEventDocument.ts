@@ -6,7 +6,6 @@ export const CreateEventDocument = async (id: string, username: string) => {
         let res = new eventDb<EventModelInterface>({ userId: id, userName: username, event: [] })
         let exec = await res.save()
         if (!exec) {
-            console.log(exec)
             return false
         }
         return true

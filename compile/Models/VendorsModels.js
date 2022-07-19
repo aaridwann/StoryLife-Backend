@@ -12,13 +12,13 @@ const vendorDb = new mongoose_1.default.Schema({
     vendorId: { type: String, required: true, unique: true },
     vendorName: { type: String, required: true, unique: true, trim: true, lowercase: true },
     identity: {
-        typeIdentity: { type: String, enum: identityList },
+        typeIdentity: { type: String, enum: identityList, required: true },
         numberIdentity: { type: Number, required: true, unique: true }
     },
-    vendorCategory: { type: String, enum: categoryList },
+    vendorCategory: { type: String, enum: categoryList, required: true },
     address: { street: { type: String, required: true }, city: { type: String, required: true }, province: { type: String, required: true }, state: { type: String, required: true } },
     contact: { phone1: String, phone2: String },
-    bankAccount: [{ bankName: { type: String, required: true }, accountNumber: { type: String, required: true } }],
+    bankAccount: { bankName: { type: String, required: true }, accountNumber: { type: String, required: true } },
     state: { type: Boolean, default: false },
     balance: { type: Number, default: 0 }
 });

@@ -1,11 +1,11 @@
-import { followDb } from "../../../Models/FollowModels"
+import { followDb } from '../../../Models/FollowModels'
 import { Response } from 'express'
 
 interface Request {
     user: {
         _id: string
     }
-    params: {
+    query: {
         id: string
     }
 }
@@ -16,35 +16,30 @@ interface Request {
 // 3. jika belum add to follow
 // 4. jika gagal hapus kembali
 // 5. jika berhasil tambah follower ke target
-let failState = (message: string) => {
-    return { state: false, message: message }
-}
 export const follow = async (req: Request, res: Response) => {
 
-    if (!req.user._id || !req.params.id) {
-        // return failState('id user or id params not found')
-        return res.status(400).json({ state: false, message: 'id user or id params not found' })
-    }
+    if (!req.user._id || !req.query.id) return res.status(400).json({ state: false, message: 'id user or id params not found' })
+    if (req.user._id == req.query.id) return res.status(400).json({ state: false, message: 'id target params cannot same with id user' })
 
     // 1. Check following
-    let check = await checkFollow(req.user._id, req.params.id)
+    let check = await checkFollow(req.user._id, req.query.id)
     if (!check.state) {
         return res.status(400).json(check.message)
         // return failState(check.message)
     }
 
     // 2. Add to Following
-    let addFollow = await addToFollow(req.user._id, req.params.id)
+    let addFollow = await addToFollow(req.user._id, req.query.id)
     if (!addFollow.state) {
         return res.status(500).json(addFollow.message)
         // return failState(addFollow.message)
     }
 
     // 3. Add to Follower
-    let addFollower = await addToFollower(req.user._id, req.params.id)
+    let addFollower = await addToFollower(req.user._id, req.query.id)
     if (!addFollower.state) {
         // if Add to follower is failed do Cancel Following 
-        await cancelFollowing(req.user._id, req.params.id)
+        await cancelFollowing(req.user._id, req.query.id)
         return res.status(500).json(addFollower.message)
         // return failState(addFollower.message)
     }
@@ -57,11 +52,11 @@ export const follow = async (req: Request, res: Response) => {
 
 // 1. Check follow Function
 export const checkFollow = async (idUser: string, idTarget: string) => {
-    let res = await followDb.findOne({ userId: idUser }, { following: 1, _id: 0 })
-    if (!res) {
-        return { state: false, message: 'data is null' }
+    let res: any | null = await followDb.findOne({ userId: idUser }, { following: 1, _id: 0 })
+    if (res == null) {
+        return { state: false, message: 'you already follow' }
     }
-    let check = res.following.map((x) => x._id).includes(idTarget)
+    let check = res.following.map((x: { _id: string }) => x._id).includes(idTarget)
     if (check) {
         return { state: false, message: 'you already follow' }
     } else {

@@ -8,7 +8,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const Schema = mongoose_1.default.Schema;
 const users = new Schema({
     name: { type: String, required: true, unique: false, lowercase: true, trim: true },
-    address: { type: String, default: '' },
+    address: { street: { type: String, default: '' }, city: { type: String, default: '' }, province: { type: String, default: '' }, state: { type: String, default: '' } },
     phone: { type: String, default: '' },
     verify: { type: Boolean, default: false },
     vendor: { type: Boolean, default: false },

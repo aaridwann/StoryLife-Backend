@@ -9,9 +9,10 @@ WORKDIR /app
 COPY package*.json ./
 
 # Bundle app source
-COPY ./compile ./
+COPY /compile ./
 
 RUN npm install
+RUN npm install bcrypt
 # If you are building your code for production
 # RUN npm ci --only=production
 

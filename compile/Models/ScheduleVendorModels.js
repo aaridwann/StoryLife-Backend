@@ -12,8 +12,7 @@ const schedule = new mongoose_1.default.Schema({
         {
             eventId: { type: String },
             eventName: { type: String },
-            eventDate: { type: Date },
-            default: ''
+            eventDate: { type: Number }
         }
     ]
 });

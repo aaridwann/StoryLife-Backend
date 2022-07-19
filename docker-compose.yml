@@ -11,7 +11,7 @@ services:
     volumes: 
     - .:/app
     environment:
-    - DB_URL=mongodb://mongodb2:27018/StoryLife
+    - DB_URL=mongodb://mongodb2:27017/StoryLife
     - PORT=8000
     depends_on:
     - mongodb2
@@ -19,8 +19,6 @@ services:
   mongodb:
     image: mongo
     container_name: mongodb2
-    ports : 
-    - 2018:2017
     networks :
     - SL
     volumes:
