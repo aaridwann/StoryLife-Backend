@@ -8,6 +8,8 @@ export const connect = async () => {
         // const db = mongoose.connection
          console.log('Connect Database')
     } catch (error) {
-        
+        console.log(error)
     }
 }
+
+
