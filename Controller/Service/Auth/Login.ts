@@ -23,10 +23,9 @@ export const login = async (req: { body: Login }, res: Response) => {
         const response = await userDb.findOne({ email: email })
 
         // handler if user not found
-        if (!response) {
-            // return console.log({ data: response, message: 'user tidak terdaftar' })
-            return res.status(400).json({ data: response, message: 'user tidak terdaftar' })
-        }
+        if (!response) return res.status(400).json({ data: response, message: 'user tidak terdaftar' })
+
+        if(response.refreshToken !== '' || response.refreshToken.length !== 0) return res.status(403).json({message:'you already login'})
 
         // Compare password
         const compare = await bcrypt.compare(password, response.password)
