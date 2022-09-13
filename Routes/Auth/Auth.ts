@@ -6,7 +6,7 @@ const express = require('express')
 const router = express.Router()
 
 
-router.post('/refreshToken', refreshToken);
+router.get('/refreshToken', refreshToken);
 router.post('/login', login)
 router.post('/register', RegisterService)
 router.delete('/logout', logout)

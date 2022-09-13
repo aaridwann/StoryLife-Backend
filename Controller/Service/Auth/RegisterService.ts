@@ -17,6 +17,7 @@ interface RequestRegisterInterface {
         email: string
         name: string
         password: string
+        confirmationPassword:string
     }
 }
 
@@ -27,9 +28,7 @@ interface Validator {
 export const RegisterService = async (req: RequestRegisterInterface, res: Response) => {
     // Validator
     let validator = await validationRequest(req.body)
-    if (!validator.state) {
-        return res.status(400).json(validator.message)
-    }
+    if (!validator.state) return res.status(400).json(validator.message)
 
     // Hasing password
     let password = await hashingPassword(req.body.password)
@@ -43,7 +42,7 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
         let create = new userDb(req.body)
         let exec = await create.save()
         if (!exec) {
-            return res.status(400).json('gagal')
+            return res.status(400).json({message:'registrasi gagal',details:exec})
         }
 
         // Create Additional Db
@@ -64,15 +63,15 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
 }
 
 const validationRequest = async (req: RequestRegisterInterface['body']): Promise<Validator> => {
-    let { email, password, name } = req
+    let { email, password, name,confirmationPassword } = req
     // init data
-    if (!email || !password || !name) {
-        return { state: false, message: 'check input data' }
-    }
+    if (!email || !password || !name || !confirmationPassword) return { state: false, message: 'check input data' }
+
+    if(password !== confirmationPassword) return {state:false,message:'password not same with confirmation password'}
+
     // check length password
-    if (password.toString().length < 5) {
-        return { state: false, message: 'password minimum 5 character' }
-    }
+    if (password.toString().length < 5) return { state: false, message: 'password minimum 5 character' }
+    
     // check already email
     let res = await userDb.findOne({ email: email })
     if (res) {

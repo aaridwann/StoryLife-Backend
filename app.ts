@@ -1,5 +1,5 @@
 require('dotenv').config()
-import express, { Response } from 'express'
+import express from 'express'
 import { createServer } from "http";
 import ChatService from './Controller/Service/Chat Service'
 // Route
@@ -19,7 +19,7 @@ const vendorAgregate = require('./Routes/Agregate/Vendors')
 
 
 const port = process.env.PORT || 8000
-export const app = express()
+const app = express()
 
 const httpServer = createServer(app)
 const cookieParser = require('cookie-parser')
@@ -48,11 +48,6 @@ httpServer.listen(port, () => console.log('server is running http://192.168.100.
 
 
 
-
-// Services
-app.get('/', (req: any, res: Response) => {
-  res.json('please use /api/(url)/')
-})
 
 
 // Aggregate
