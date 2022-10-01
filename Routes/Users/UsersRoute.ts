@@ -1,5 +1,5 @@
 import { getUser } from "../../Controller/Service/Users/UsersController"
-import UploadTest from "../../Controller/Service/Upload/Test"
+import UploadTest from "../../Controller/Service/Upload/Test/index"
 import { uploadSingle } from "../../Utils/Multer"
 const { verify } = require('../../MiddleWare/TokenMiddleware')
 const express = require('express')
