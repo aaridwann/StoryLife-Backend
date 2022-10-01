@@ -4,11 +4,14 @@ import { abortBallance } from "../Abort Document/abortBallance";
 import { abortBooking } from "../Abort Document/abortBooking";
 import { abortEvent } from "../Abort Document/abortEvent";
 import { abortFollow } from "../Abort Document/abortFollow";
+import AbortSuspenseDb from "../Abort Document/abortSuspense";
 import { abortUser } from "../Abort Document/abortUser";
 import { CreateBallanceAccount } from "../Create Document/CreateBallanceAccount";
 import { CreateBookingDocument } from "../Create Document/CreateBookingDocument";
 import { CreateEventDocument } from "../Create Document/CreateEventDocument";
 import { CreateFollowDb } from "../Create Document/CreateFollowDb";
+import CreateSuspenseDb from "../Create Document/CreateSuspenseAccount";
+import CreateNotifDb from "../Notification/CreateDbNotif";
 
 const bcrypt = require('bcrypt');
 
@@ -99,8 +102,10 @@ const CreateAdditionalDb = async (email: string, username: string): Promise<bool
     let ballance = await CreateBallanceAccount(id, email, username)
     let follow = await CreateFollowDb(id, username)
     let booking = await CreateBookingDocument(id, username)
+    let suspense = await CreateSuspenseDb(id)
+    let notif = await CreateNotifDb(id)
 
-    if (!ballance || !follow || !event || !booking) {
+    if (!ballance || !follow || !event || !booking || !suspense) {
         return { state: false, id: id }
     }
     return { state: true, message: 'ok' }
@@ -112,7 +117,8 @@ export const abortRegister = async (id: string) => {
     let event = await abortEvent(id);
     let follow = await abortFollow(id);
     let booking = await abortBooking(id);
-    if (!ballance || !user || !event || !follow || !booking) {
+    let suspense = await AbortSuspenseDb(id)
+    if (!ballance || !user || !event || !follow || !booking || !suspense) {
         console.log({ ballance: ballance, follow: follow, event: event, booking: booking });
         return {
             state: false, message: {
@@ -120,7 +126,8 @@ export const abortRegister = async (id: string) => {
                 ballance: ballance.message,
                 event: event.message,
                 follow: follow.message,
-                booking: booking.message
+                booking: booking.message,
+                suspense: suspense.message
             }
         };
     }

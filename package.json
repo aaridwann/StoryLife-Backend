@@ -21,8 +21,10 @@
   "dependencies": {
     "@tsconfig/node16": "^1.0.3",
     "@types/body-parser": "^1.19.2",
+    "amqplib": "^0.10.3",
     "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
+    "cloudinary": "^1.32.0",
     "cookie-parser": "^1.4.6",
     "core-js": "^3.23.3",
     "cors": "^2.8.5",
@@ -34,8 +36,10 @@
     "mongodb": "^4.5.0",
     "mongodb-memory-server": "^8.5.2",
     "mongoose": "^6.2.10",
+    "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.7.3",
     "nodemon": "^2.0.19",
+    "sharp": "^0.31.0",
     "socket.io": "^4.5.2"
   },
   "devDependencies": {

@@ -2,6 +2,8 @@ require('dotenv').config()
 import express from 'express'
 import { createServer } from "http";
 import ChatService from './Controller/Service/Chat Service'
+import AddNotification from './Controller/Service/Notification/AddNotification';
+import CreateNotifDb from './Controller/Service/Notification/CreateDbNotif';
 // Route
 const AuthRoute = require('./Routes/Auth/Auth')
 const UsersRoute = require('./Routes/Users/UsersRoute')
@@ -44,13 +46,22 @@ app.use(cors(corsOptions))
 app.use(bodyParser.json())
 app.use(express.json())
 // app.listen(port, () => console.log('server is running http://192.168.100.13:' + port))
-httpServer.listen(port, () => console.log('server is running http://192.168.100.13:' + port))
+
+httpServer.listen(port, async () => {
+  console.log('server is running http://192.168.100.13:' + port)
+})
 
 
 
+app.post('/msg',async (req,res) => {
+  await CreateNotifDb(req.body.userId)
+  res.json(req.body.userId)
+})
+app.post('/addnotif',async (req,res) => {
+  await AddNotification(req.body.userId,req.body.data)
+  res.json(req.body)
+})
 
-
-// Aggregate
 app.use('/api/vendor', vendorAgregate)
 app.use('/auth', AuthRoute)
 app.use('/users', UsersRoute)

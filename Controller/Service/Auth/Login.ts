@@ -1,4 +1,5 @@
 import { Response } from 'express'
+import SuspenseModels from '../../../Models/SuspenseModels';
 import { userDb } from '../../../Models/UsersModels'
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken')
@@ -32,7 +33,11 @@ export const login = async (req: { body: Login }, res: Response) => {
 
         // handler if password not match
         if (!compare) {
-            // return console.log({ data: compare, message: 'Password salah' })
+            // const suspense =  await SuspenseModels.updateOne({userId:response._id},
+            //     // {$set:{status: {$cond: [ {$eq : [ "$alert", 4]}, 'suspense','unsuspense']}},
+            //      {$inc:{alert:{$cond:{if:{$lte:["$alert",4]}, then:1,else:4}}}})
+            // // return console.log({ data: compare, message: 'Password salah' })
+            // console.log(suspense)
             return res.status(400).json({ data: compare, message: 'Password salah' })
         }
 

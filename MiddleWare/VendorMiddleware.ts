@@ -9,13 +9,13 @@ export const verifyVendor = async (req: any, res: any, next: any) => {
         if (!user) {
             return res.json({ data: user, message: 'Anda bukan Vendor' })
         }
-
         // Chek user sudah punya vendor atau belum
         const vndr = await vendor.findOne({ vendorId: user._id })
         if (!vndr) {
             return res.json({ data: vndr, message: 'Vendor kamu belum ada' })
         }
         req.vendor = vndr
+        
         next()
 
     } catch (error) {
