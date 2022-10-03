@@ -4,11 +4,14 @@ import { abortBallance } from "../Abort Document/abortBallance";
 import { abortBooking } from "../Abort Document/abortBooking";
 import { abortEvent } from "../Abort Document/abortEvent";
 import { abortFollow } from "../Abort Document/abortFollow";
+import AbortSuspenseDb from "../Abort Document/abortSuspense";
 import { abortUser } from "../Abort Document/abortUser";
 import { CreateBallanceAccount } from "../Create Document/CreateBallanceAccount";
 import { CreateBookingDocument } from "../Create Document/CreateBookingDocument";
 import { CreateEventDocument } from "../Create Document/CreateEventDocument";
 import { CreateFollowDb } from "../Create Document/CreateFollowDb";
+import CreateSuspenseDb from "../Create Document/CreateSuspenseAccount";
+import CreateNotifDb from "../Notification/CreateDbNotif";
 
 const bcrypt = require('bcrypt');
 
@@ -17,6 +20,7 @@ interface RequestRegisterInterface {
         email: string
         name: string
         password: string
+        confirmationPassword:string
     }
 }
 
@@ -27,9 +31,7 @@ interface Validator {
 export const RegisterService = async (req: RequestRegisterInterface, res: Response) => {
     // Validator
     let validator = await validationRequest(req.body)
-    if (!validator.state) {
-        return res.status(400).json(validator.message)
-    }
+    if (!validator.state) return res.status(400).json(validator.message)
 
     // Hasing password
     let password = await hashingPassword(req.body.password)
@@ -43,7 +45,7 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
         let create = new userDb(req.body)
         let exec = await create.save()
         if (!exec) {
-            return res.status(400).json('gagal')
+            return res.status(400).json({message:'registrasi gagal',details:exec})
         }
 
         // Create Additional Db
@@ -64,15 +66,15 @@ export const RegisterService = async (req: RequestRegisterInterface, res: Respon
 }
 
 const validationRequest = async (req: RequestRegisterInterface['body']): Promise<Validator> => {
-    let { email, password, name } = req
+    let { email, password, name,confirmationPassword } = req
     // init data
-    if (!email || !password || !name) {
-        return { state: false, message: 'check input data' }
-    }
+    if (!email || !password || !name || !confirmationPassword) return { state: false, message: 'check input data' }
+
+    if(password !== confirmationPassword) return {state:false,message:'password not same with confirmation password'}
+
     // check length password
-    if (password.toString().length < 5) {
-        return { state: false, message: 'password minimum 5 character' }
-    }
+    if (password.toString().length < 5) return { state: false, message: 'password minimum 5 character' }
+    
     // check already email
     let res = await userDb.findOne({ email: email })
     if (res) {
@@ -100,8 +102,10 @@ const CreateAdditionalDb = async (email: string, username: string): Promise<bool
     let ballance = await CreateBallanceAccount(id, email, username)
     let follow = await CreateFollowDb(id, username)
     let booking = await CreateBookingDocument(id, username)
+    let suspense = await CreateSuspenseDb(id)
+    let notif = await CreateNotifDb(id)
 
-    if (!ballance || !follow || !event || !booking) {
+    if (!ballance || !follow || !event || !booking || !suspense) {
         return { state: false, id: id }
     }
     return { state: true, message: 'ok' }
@@ -113,7 +117,8 @@ export const abortRegister = async (id: string) => {
     let event = await abortEvent(id);
     let follow = await abortFollow(id);
     let booking = await abortBooking(id);
-    if (!ballance || !user || !event || !follow || !booking) {
+    let suspense = await AbortSuspenseDb(id)
+    if (!ballance || !user || !event || !follow || !booking || !suspense) {
         console.log({ ballance: ballance, follow: follow, event: event, booking: booking });
         return {
             state: false, message: {
@@ -121,7 +126,8 @@ export const abortRegister = async (id: string) => {
                 ballance: ballance.message,
                 event: event.message,
                 follow: follow.message,
-                booking: booking.message
+                booking: booking.message,
+                suspense: suspense.message
             }
         };
     }

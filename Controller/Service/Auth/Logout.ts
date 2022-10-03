@@ -5,24 +5,17 @@ const jwt = require('jsonwebtoken')
 
 export const logout = async (req: any, res: Response) => {
     // Initial token from headers Cookie
-    let { refreshToken } = req.headers.cookie
+    let { refreshToken } = req.cookies
 
     // Handler if not have cookie token
-    if (!refreshToken) {
-        return res.status(403).json({ status: 'You are already logout' })
+    if (!refreshToken) return res.status(403).json({ status: 'You are already logout' })
+    
+    try {
+        let response = await userDb.findOneAndUpdate({refreshToken: refreshToken }, { $set: { refreshToken: '' } },{address:0,password:0,refreshToken:0,createdAt:0,updatedAt:0,vendor:0,verify:0,__v:0})
+        if(!response) return res.status(403).json({message:response})
+        res.clearCookie('refreshToken')
+        return res.status(201).send({ message: 'you are logout', data: response })
+    } catch (error) {
+        return res.status(500).json(error)       
     }
-    // Decode process
-    let decode = await jwt.verify(req.headers.cookie.refreshToken, process.env.REFRESH_TOKEN)
-
-    // handler if signature token are not valid
-    if (!decode) { return res.status(403) }
-
-    // Delete refresh token from database user
-    let response = await userDb.updateOne({ _id: decode._id }, { $set: { refreshToken: '' } })
-
-    // Clear cookie
-    res.clearCookie('refreshToken')
-
-    // Return send json
-    return res.status(201).send({ message: 'you are logout', data: response })
 }

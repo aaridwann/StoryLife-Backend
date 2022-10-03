@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 export const categoryEvent = ['wedding', 'party', 'prewedding', 'birthday', 'engagement', 'religion']
-
-
-let vendorCategory = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
+export let vendorCategory = ['photography', 'videography', 'makeup artist', 'gawn', 'decoration', 'invitation', 'venue', 'mc', 'entertainment', 'wedding service']
 
 interface PackageList {
     packageId: string
@@ -22,7 +20,7 @@ export interface VendorList {
 }
 export interface EventList {
     eventName: string,
-    eventDate: number,
+    eventDate: Date,
     eventLocation: { street: string, city: string, province: string, state: string }
     eventCategory: string
     vendor: Array<VendorList>

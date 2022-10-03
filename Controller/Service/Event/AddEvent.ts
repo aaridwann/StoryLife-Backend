@@ -40,7 +40,7 @@ export const AddEvent = async (req: RequestAddEventFunctionInterface, res: Respo
     try {
         let insert = await eventDb.updateOne({ userId: req.user._id }, { $push: { event: data.message } })
         if (!insert) {
-            return res.status(500).json({ state: false, message: 'something error' })
+            return res.status(400).json({ state: false, message: 'something error' })
         }
         return res.status(201).json({ state: true, message: 'success create event', data: insert })
     } catch (error) {
